@@ -4,7 +4,7 @@ using RestApiAutomationTraining.Models;
 namespace RestApiAutomationTraining.ApiTests
 {
     [TestFixture]
-    public class ZipCodesTests : BaseApiTest
+    public class ZipCodesTests
     {
 
         [Test]
@@ -32,7 +32,7 @@ namespace RestApiAutomationTraining.ApiTests
         public void GetZipCodes_AvailableZipCodesReturned_Valid()
         {
             var response = ApiActions.GetZipCodes();
-            var zipCodes = DeserializeResponse<string[]>(response);
+            var zipCodes = JsonHelper.DeserializeObject<string[]>(response);
 
             Assert.That(zipCodes, Has.Length.GreaterThanOrEqualTo(0));
         }
@@ -44,7 +44,7 @@ namespace RestApiAutomationTraining.ApiTests
             var newZipCodeAsNumericString = StringHelper.GetRandomNumericString(5);
             var response = ApiActions.CreateZipCodes(newZipCodeAsLetterString, newZipCodeAsNumericString);
 
-            var actualZipCodes = DeserializeResponse<List<string>>(ApiActions.GetZipCodes());
+            var actualZipCodes = JsonHelper.DeserializeObject<List<string>>(ApiActions.GetZipCodes());
 
             Assert.Multiple(() =>
             {
@@ -66,7 +66,7 @@ namespace RestApiAutomationTraining.ApiTests
 
             var uniqueZipCode = StringHelper.GetRandomNumericString(5);
             var response = ApiActions.CreateZipCodes(duplicatedZipCode, uniqueZipCode);
-            var actualZipCodes = DeserializeResponse<List<string>>(ApiActions.GetZipCodes());
+            var actualZipCodes = JsonHelper.DeserializeObject<List<string>>(ApiActions.GetZipCodes());
 
             Assert.Multiple(() =>
             {
@@ -94,7 +94,7 @@ namespace RestApiAutomationTraining.ApiTests
         }
 
         [Test]
-        public void ExpandZipCodes_NoDuplicatesCreated_InputContainsDuplicates_Valid()
+        public void ExpandZipCodes_NoDuplicatesCreatedForUsedZipCodes_Valid()
         {
             #region Test pre-setup
 
@@ -108,7 +108,7 @@ namespace RestApiAutomationTraining.ApiTests
 
             var uniqueZipCode = StringHelper.GetRandomNumericString(5);
             var response = ApiActions.CreateZipCodes(usedZipCode, uniqueZipCode);
-            var actualZipCodes = DeserializeResponse<List<string>>(ApiActions.GetZipCodes());
+            var actualZipCodes = JsonHelper.DeserializeObject<List<string>>(ApiActions.GetZipCodes());
 
             Assert.Multiple(() =>
             {

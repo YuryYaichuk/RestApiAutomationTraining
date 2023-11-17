@@ -7,23 +7,20 @@ public class ApiClientForRead
 {
     private static RestClient? _client;
 
-    private ApiClientForRead(string baseUrl)
-    {
-        _client = new RestClient(new RestClientOptions(baseUrl));
-        _client.AddDefaultHeader(KnownHeaders.Authorization,
-                    new ReadScopeAuthentificator().GetToken(baseUrl));
-    }
-
     public static RestClient GetClient
     {
         get
         {
             if (_client == null)
             {
-                _ = new ApiClientForRead(GlobalConstants.BaseUrl);
+                var authentificator = new ReadScopeAuthentificator(GlobalConstants.BaseUrl,
+                    GlobalConstants.ClientId,
+                    GlobalConstants.ClientSecret);
+                _client = new RestClient(new RestClientOptions(GlobalConstants.BaseUrl));
+                _client.AddDefaultHeader(KnownHeaders.Authorization, ReadScopeAuthentificator.GetToken());
             }
 
-            return _client ?? throw new NullReferenceException("No instance found");
+            return _client;
         }
     }
 }

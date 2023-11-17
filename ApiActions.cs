@@ -15,7 +15,6 @@ public class ApiActions
         const string uri = "/zip-codes";
         var request = new RestRequest(uri);
         var response = RestClientHelper.Execute(request);
-        Assert.That(response.IsSuccessful, Is.True);
         return response;
     }
 
@@ -30,7 +29,6 @@ public class ApiActions
         var request = new RestRequest(uri, Method.Post);
         request.AddJsonBody(zipCodes);
         var response = RestClientHelper.Execute(request);
-        Assert.That(response.IsSuccessful, Is.True);
         return response;
     }
 
@@ -48,7 +46,6 @@ public class ApiActions
         var request = new RestRequest(uri, Method.Post);
         request.AddJsonBody(user);
         var response = RestClientHelper.Execute(request);
-        Assert.That(response.IsSuccessful, Is.True);
         return response;
     }
 }

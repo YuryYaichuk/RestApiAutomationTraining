@@ -8,29 +8,26 @@ namespace RestApiAutomationTraining.Authentificator;
 
 public abstract class CustomAuthentificator : AuthenticatorBase
 {
-    public CustomAuthentificator() : base("")
+    protected RestClientOptions Options { get; }
+    private static RestClient? _client;
+
+    public CustomAuthentificator(string baseUrl, string user, string password) : base("")
     {
+        Options = new RestClientOptions(baseUrl)
+        {
+            Authenticator = new HttpBasicAuthenticator(user, password)
+        };
+
+        _client = new RestClient(Options);
     }
 
-    protected string GetToken(string baseUrl, ScopeEnum scope)
+    protected static string GetToken(ScopeEnum scope)
     {
-        if (string.IsNullOrEmpty(Token))
-        {
-            var options = new RestClientOptions(baseUrl)
-            {
-                Authenticator = new HttpBasicAuthenticator(
-                GlobalConstants.ClientId, GlobalConstants.ClientSecret)
-            };
-
-            using var client = new RestClient(options);
-            var request = new RestRequest("oauth/token")
+        var request = new RestRequest("oauth/token")
                 .AddParameter("grant_type", "client_credentials")
                 .AddParameter("scope", scope.ToString().ToLower());
-            var response = client.Execute(request, Method.Post);
-            var tokenModel = JsonHelper.DeserializeObject<TokenResponseModel>(response);
-            Token = $"{tokenModel.TokenType} {tokenModel.AccessToken}";
-        }
-
-        return Token;
+        var response = _client!.Execute(request, Method.Post);
+        var tokenModel = JsonHelper.DeserializeObject<TokenResponseModel>(response);
+        return $"{tokenModel.TokenType} {tokenModel.AccessToken}";
     }
 }

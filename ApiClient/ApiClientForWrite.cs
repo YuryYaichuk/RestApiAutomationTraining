@@ -7,24 +7,20 @@ public class ApiClientForWrite
 {
     private static RestClient? _client;
 
-    private ApiClientForWrite(string baseUrl)
-
-    {
-        _client = new RestClient(new RestClientOptions(baseUrl));
-        _client.AddDefaultHeader(KnownHeaders.Authorization,
-                    new WriteScopeAuthentificator().GetToken(baseUrl));
-    }
-
     public static RestClient GetClient
     {
         get
         {
-            if (_client == null)
+            if (_client is null)
             {
-                _ = new ApiClientForWrite(GlobalConstants.BaseUrl);
+                var authentificator = new WriteScopeAuthentificator(GlobalConstants.BaseUrl,
+                    GlobalConstants.ClientId,
+                    GlobalConstants.ClientSecret);
+                _client = new RestClient(new RestClientOptions(GlobalConstants.BaseUrl));
+                _client.AddDefaultHeader(KnownHeaders.Authorization, WriteScopeAuthentificator.GetToken());
             }
 
-            return _client ?? throw new NullReferenceException("No instance found");
+            return _client;
         }
     }
 }
