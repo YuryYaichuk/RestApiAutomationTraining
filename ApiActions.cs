@@ -32,10 +32,18 @@ public class ApiActions
         return response;
     }
 
-    public static RestResponse GetUsers()
+    public static RestResponse GetUsers(params (string, string)[] parameters)
     {
         const string uri = "/users";
         var request = new RestRequest(uri);
+
+        if (parameters != null)
+        {
+            foreach (var pair in parameters)
+            {
+                request.AddQueryParameter(pair.Item1, pair.Item2);
+            }
+        }
         var response = RestClientHelper.Execute(request);
         return response;
     }

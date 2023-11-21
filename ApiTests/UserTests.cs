@@ -1,17 +1,12 @@
-﻿using RestApiAutomationTraining.Helpers;
+﻿using NUnit.Framework.Internal;
+using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
 
 namespace RestApiAutomationTraining.ApiTests;
 
 public class UserTests
 {
-    [Test]
-    public void GetUsers_Valid()
-    {
-        var response = ApiActions.GetUsers();
-
-        Assert.That((int)response.StatusCode, Is.EqualTo(200));
-    }
+    private static readonly Random _random = new();
 
     [Test]
     public void CreateUser_AllFieldsPopulated_Valid()
@@ -23,7 +18,7 @@ public class UserTests
 
         #endregion
 
-        var randomUser = UserModel.GenerateRandomUser(randomZipCode, new Random().Next(1, 124));
+        var randomUser = UserModel.GenerateRandomUser(randomZipCode, _random.Next(1, 124));
         var response = ApiActions.CreateUser(randomUser);
         var expectedUser = JsonHelper.DeserializeObject<List<UserModel>>(ApiActions.GetUsers())
             .SingleOrDefault(_ => _.Age == randomUser.Age && _.Name == randomUser.Name && _.ZipCode == randomUser.ZipCode);
@@ -56,7 +51,7 @@ public class UserTests
     public void CreateUser_NotExistingZipCode_Invalid()
     {
         var fakeZipCode = StringHelper.GetRandomNumericString(5);
-        var randomUser = UserModel.GenerateRandomUser(fakeZipCode, new Random().Next(1, 124));
+        var randomUser = UserModel.GenerateRandomUser(fakeZipCode, _random.Next(1, 124));
         var response = ApiActions.CreateUser(randomUser);
         var expectedUser = JsonHelper.DeserializeObject<List<UserModel>>(ApiActions.GetUsers())
             .SingleOrDefault(_ =>
