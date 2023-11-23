@@ -1,84 +1,119 @@
-﻿using RestApiAutomationTraining.Enums;
+﻿using RestApiAutomationTraining.ApiActions;
+using RestApiAutomationTraining.Enums;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
 
 namespace RestApiAutomationTraining.ApiTests;
 
-public class Task40Tests
+[TestFixture]
+public class Task40Tests : BaseApiTest
 {
     [Test]
     public void GetUsers_Valid()
     {
         #region Test pre-setup
 
-        TestDataHelper.CreateUsers(3);
+        const int extraUserNumber = 3;
+        var response = ReadApiActions.GetUsers();
+        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        var initialUsersCount = users.Count;
+        CreateUsers(extraUserNumber);
 
         #endregion
 
-        var response = ApiActions.GetUsers();
-        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        response = ReadApiActions.GetUsers();
+        var actualUserList = JsonHelper.DeserializeObject<List<UserModel>>(response);
 
         Assert.Multiple(() =>
         {
             Assert.That((int)response.StatusCode, Is.EqualTo(200));
-            Assert.That(users, Has.Count.GreaterThanOrEqualTo(3));
+            Assert.That(actualUserList, Has.Count.GreaterThanOrEqualTo(initialUsersCount + extraUserNumber));
         });
     }
 
     [Test]
     public void GetUsers_FilteredByOlderThan_Valid()
     {
+        const int ageLimit = 12;
+        const string paramName = "olderThan";
+
         #region Test pre-setup
 
-        TestDataHelper.CreateUsers(3, true);
+        CreateUsers(3, true);
+
+        var response = ReadApiActions.GetUsers();
+        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        var expectedUserCount = users.Count(_ => _.Age > ageLimit && _.Age != null);
 
         #endregion
 
-        var response = ApiActions.GetUsers(("olderThan", "1"));
-        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
+        var actualUsers = JsonHelper.DeserializeObject<List<UserModel>>(response);
 
         Assert.Multiple(() =>
         {
             Assert.That((int)response.StatusCode, Is.EqualTo(200));
-            Assert.That(users, Has.Count.GreaterThanOrEqualTo(3));
+            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
     }
 
     [Test]
     public void GetUsers_FilteredByYongerThan_Valid()
     {
+        const int ageLimit = 60;
+        const string paramName = "yongerThan";
+
         #region Test pre-setup
 
-        TestDataHelper.CreateUsers(3, true);
+        CreateUsers(3, true);
+
+        var response = ReadApiActions.GetUsers();
+        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        var expectedUserCount = users.Count(_ => _.Age < ageLimit && _.Age != null);
 
         #endregion
 
-        var response = ApiActions.GetUsers(("yongerThan", "124"));
-        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
+        var actualUsers = JsonHelper.DeserializeObject<List<UserModel>>(response);
 
         Assert.Multiple(() =>
         {
             Assert.That((int)response.StatusCode, Is.EqualTo(200));
-            Assert.That(users, Has.Count.GreaterThanOrEqualTo(3));
+            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
+
+        /*
+             * Bug: Filtering by 'yongerThan' does not work
+             * 
+             * Error Message: 
+             * Expected: property Count equal to 18
+             * But was:  56
+             */
     }
 
     [Test]
     public void GetUsers_FilteredBySex_Valid()
     {
+        const SexEnum filterValue = SexEnum.FEMALE;
+        const string paramName = "sex";
+
         #region Test pre-setup
 
-        TestDataHelper.CreateUsers(3);
+        CreateUsers(3);
+
+        var response = ReadApiActions.GetUsers();
+        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        var expectedUserCount = users.Count(_ => _.Sex == filterValue);
 
         #endregion
 
-        var response = ApiActions.GetUsers(("sex", SexEnum.FEMALE.ToString()));
-        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        response = ReadApiActions.GetUsers((paramName, filterValue.ToString()));
+        var actualUsers = JsonHelper.DeserializeObject<List<UserModel>>(response);
 
         Assert.Multiple(() =>
         {
             Assert.That((int)response.StatusCode, Is.EqualTo(200));
-            Assert.That(users, Has.Count.GreaterThanOrEqualTo(3));
+            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
     }
 }
