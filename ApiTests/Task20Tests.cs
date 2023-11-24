@@ -23,17 +23,17 @@ public class Task20Tests : BaseApiTest
             StringHelper.GetRandomString(5),
             StringHelper.GetRandomNumericString(5)
         };
-        var response = WriteApiActions.CreateZipCodes(expectedZipCodeList.ToArray());
-        Assert.That((int)response.StatusCode, Is.EqualTo(201));
+
+        AddNewZipCodes(expectedZipCodeList.ToArray());
 
         #endregion
 
         var getZipCodesResponse = ReadApiActions.GetZipCodes();
-        var zipCodes = JsonHelper.DeserializeObject<List<string>>(getZipCodesResponse);
+        var zipCodes = getZipCodesResponse.ToModel<List<string>>();
 
         Assert.Multiple(() =>
         {
-            AssertWrapper.AssertStatusCode(getZipCodesResponse, 200);
+            Asserts.AssertStatusCode(getZipCodesResponse, 200);
             Assert.That(zipCodes, Has.Count.EqualTo(2));
         });
 
@@ -60,11 +60,11 @@ public class Task20Tests : BaseApiTest
             StringHelper.GetRandomNumericString(5)
         };
         var response = WriteApiActions.CreateZipCodes(expectedZipCodeList.ToArray());
-        var actualZipCodes = JsonHelper.DeserializeObject<List<string>>(ReadApiActions.GetZipCodes());
+        var actualZipCodes = GetZipCodesModel();
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)response.StatusCode, Is.EqualTo(201));
+            Asserts.AssertStatusCode(response, 201);
             Assert.That(actualZipCodes, Is.EquivalentTo(expectedZipCodeList));
         });
     }
@@ -75,8 +75,7 @@ public class Task20Tests : BaseApiTest
         #region Test pre-setup
 
         var duplicatedZipCode = StringHelper.GetRandomNumericString(5);
-        var response = WriteApiActions.CreateZipCodes(duplicatedZipCode);
-        Assert.That((int)response.StatusCode, Is.EqualTo(201));
+        AddNewZipCodes(duplicatedZipCode);
 
         #endregion
 
@@ -87,11 +86,11 @@ public class Task20Tests : BaseApiTest
         };
 
         var createZipCodesResponse = WriteApiActions.CreateZipCodes(expectedZipCodeList.ToArray());
-        var actualZipCodes = JsonHelper.DeserializeObject<List<string>>(ReadApiActions.GetZipCodes());
+        var actualZipCodes = GetZipCodesModel();
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)createZipCodesResponse.StatusCode, Is.EqualTo(201));
+            Asserts.AssertStatusCode(createZipCodesResponse, 201);
             Assert.That(actualZipCodes, Is.EquivalentTo(expectedZipCodeList));
         });
 
@@ -118,12 +117,10 @@ public class Task20Tests : BaseApiTest
         #region Test pre-setup
 
         var usedZipCode = StringHelper.GetRandomNumericString(5);
-        var response = WriteApiActions.CreateZipCodes(usedZipCode);
-        Assert.That((int)response.StatusCode, Is.EqualTo(201));
+        AddNewZipCodes(usedZipCode);
 
         var randomUser = UserModel.GenerateRandomUser(usedZipCode, Random.Next(1, 124));
-        response = WriteApiActions.CreateUser(randomUser);
-        Assert.That((int)response.StatusCode, Is.EqualTo(201));
+        AddNewUser(randomUser);
 
         #endregion
 
@@ -133,11 +130,11 @@ public class Task20Tests : BaseApiTest
         };
 
         var createZipCodeResponse = WriteApiActions.CreateZipCodes(expectedZipCodeList.Single(), usedZipCode);
-        var actualZipCodes = JsonHelper.DeserializeObject<List<string>>(ReadApiActions.GetZipCodes());
+        var actualZipCodes = GetZipCodesModel();
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)createZipCodeResponse.StatusCode, Is.EqualTo(201));
+            Asserts.AssertStatusCode(createZipCodeResponse, 201);
             Assert.That(actualZipCodes, Is.EquivalentTo(expectedZipCodeList));
         });
 

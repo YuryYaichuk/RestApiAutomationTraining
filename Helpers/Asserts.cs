@@ -2,7 +2,7 @@
 
 namespace RestApiAutomationTraining.Helpers;
 
-public class AssertWrapper
+public class Asserts
 {
     public static void AssertStatusCode(RestResponse response, int expectedCode)
     {

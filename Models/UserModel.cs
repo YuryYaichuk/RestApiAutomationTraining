@@ -42,11 +42,6 @@ public class UserModel
             Age == incomingObj.Age &&
             ZipCode == incomingObj.ZipCode;
     }
-
-    public override int GetHashCode()
-    {
-        throw new NotImplementedException();
-    }
 }
 
 public class UpdateUserDto

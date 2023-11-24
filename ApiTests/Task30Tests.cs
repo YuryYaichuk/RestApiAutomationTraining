@@ -8,44 +8,46 @@ namespace RestApiAutomationTraining.ApiTests;
 [TestFixture]
 public class Task30Tests : BaseApiTest
 {
+    [SetUp]
+    protected void TestSetup()
+    {
+        ClearUsers();
+    }
+
     [Test]
     public void CreateUser_AllFieldsPopulated_Valid()
     {
         #region Test pre-setup
 
         string randomZipCode = StringHelper.GetRandomString(5);
-        var response = WriteApiActions.CreateZipCodes(randomZipCode);
-        Assert.That((int)response.StatusCode, Is.EqualTo(201));
+        AddNewZipCodes(randomZipCode);
 
         #endregion
 
-        var randomUser = UserModel.GenerateRandomUser(randomZipCode, Random.Next(1, 124));
-        var createUserResponse = WriteApiActions.CreateUser(randomUser);
-        var expectedUser = JsonHelper.DeserializeObject<List<UserModel>>(ReadApiActions.GetUsers())
-            .SingleOrDefault(_ => _.Name == randomUser.Name && _.ZipCode == randomUser.ZipCode);
-        var zipCodes = JsonHelper.DeserializeObject<List<string>>(ReadApiActions.GetZipCodes());
+        var expectedUser = UserModel.GenerateRandomUser(randomZipCode, Random.Next(1, 124));
+        var createUserResponse = WriteApiActions.CreateUser(expectedUser);
+        var actualUser = GetUserModels().SingleOrDefault(_ =>_.Name == expectedUser.Name);
+        var zipCodes = GetZipCodesModel();
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)createUserResponse.StatusCode, Is.EqualTo(201));
-            Assert.That(expectedUser, Is.Not.Null);
-            Assert.That(zipCodes, Does.Not.Contain(randomUser.ZipCode));
+            Asserts.AssertStatusCode(createUserResponse, 201);
+            Assert.That(actualUser, Is.EqualTo(expectedUser));
+            Assert.That(zipCodes, Does.Not.Contain(expectedUser.ZipCode));
         });
     }
 
     [Test]
     public void CreateUser_RequiredFieldsOnlyPopulated_Valid()
     {
-        var randomUser = UserModel.GenerateRandomUser();
-        var createUserResponse = WriteApiActions.CreateUser(randomUser);
-        var getUsersResponse = ReadApiActions.GetUsers();
-        var expectedUser = JsonHelper.DeserializeObject<List<UserModel>>(getUsersResponse)
-            .SingleOrDefault(_ => _.Name == randomUser.Name && _.Sex == randomUser.Sex);
+        var expectedUser = UserModel.GenerateRandomUser();
+        var createUserResponse = WriteApiActions.CreateUser(expectedUser);
+        var actualUser = GetUserModels().SingleOrDefault(_ => _.Name == expectedUser.Name);
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)createUserResponse.StatusCode, Is.EqualTo(201));
-            Assert.That(expectedUser, Is.Not.Null);
+            Asserts.AssertStatusCode(createUserResponse, 201);
+            Assert.That(actualUser, Is.EqualTo(expectedUser));
         });
     }
 
@@ -53,15 +55,15 @@ public class Task30Tests : BaseApiTest
     public void CreateUser_NotExistingZipCode_Invalid()
     {
         var fakeZipCode = StringHelper.GetRandomNumericString(5);
-        var randomUser = UserModel.GenerateRandomUser(fakeZipCode, Random.Next(1, 124));
-        var createUserResponse = WriteApiActions.CreateUser(randomUser);
-        var expectedUser = JsonHelper.DeserializeObject<List<UserModel>>(ReadApiActions.GetUsers())
-            .SingleOrDefault(_ => _.Name == randomUser.Name && _.ZipCode == randomUser.ZipCode);
+        var expectedUser = UserModel.GenerateRandomUser(fakeZipCode, Random.Next(1, 124));
+        var createUserResponse = WriteApiActions.CreateUser(expectedUser);
+        var actualUser = GetUserModels().SingleOrDefault(_ 
+            => _.Name == expectedUser.Name && _.ZipCode == expectedUser.ZipCode);
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)createUserResponse.StatusCode, Is.EqualTo(424));
-            Assert.That(expectedUser, Is.Null);
+            Asserts.AssertStatusCode(createUserResponse, 424);
+            Assert.That(actualUser, Is.Null);
         });
     }
 
@@ -70,19 +72,18 @@ public class Task30Tests : BaseApiTest
     {
         #region Test pre-setup
 
-        UserModel randomUser = UserModel.GenerateRandomUser();
-        var createUserResponse = WriteApiActions.CreateUser(randomUser);
-        Assert.That((int)createUserResponse.StatusCode, Is.EqualTo(201));
+        UserModel expectedUser = UserModel.GenerateRandomUser();
+        AddNewUser(expectedUser);
 
         #endregion
 
-        var response = WriteApiActions.CreateUser(randomUser);
-        var users = JsonHelper.DeserializeObject<List<UserModel>>(ReadApiActions.GetUsers());
+        var response = WriteApiActions.CreateUser(expectedUser);
+        var usersCount = GetUserModels().Count(_ => _.Name == expectedUser.Name);
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)response.StatusCode, Is.EqualTo(400));
-            Assert.That(users.Count(_ => _.Name == randomUser.Name), Is.EqualTo(1));
+            Asserts.AssertStatusCode(response, 400);
+            Assert.That(usersCount, Is.EqualTo(1));
         });
 
         /*

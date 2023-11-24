@@ -14,19 +14,18 @@ public class Task40Tests : BaseApiTest
         #region Test pre-setup
 
         const int extraUserNumber = 3;
-        var response = ReadApiActions.GetUsers();
-        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
-        var initialUsersCount = users.Count;
+        var initialUsersCount = GetUserModels().Count;
+
         CreateUsers(extraUserNumber);
 
         #endregion
 
-        response = ReadApiActions.GetUsers();
-        var actualUserList = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        var response = ReadApiActions.GetUsers();
+        var actualUserList = response.ToModel<List<UserModel>>();
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)response.StatusCode, Is.EqualTo(200));
+            Asserts.AssertStatusCode(response, 200);
             Assert.That(actualUserList, Has.Count.GreaterThanOrEqualTo(initialUsersCount + extraUserNumber));
         });
     }
@@ -41,18 +40,17 @@ public class Task40Tests : BaseApiTest
 
         CreateUsers(3, true);
 
-        var response = ReadApiActions.GetUsers();
-        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
-        var expectedUserCount = users.Count(_ => _.Age > ageLimit && _.Age != null);
+        var expectedUserCount = GetUserModels()
+            .Count(_ => _.Age > ageLimit && _.Age != null);
 
         #endregion
 
-        response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
-        var actualUsers = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        var response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
+        var actualUsers = response.ToModel<List<UserModel>>();
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)response.StatusCode, Is.EqualTo(200));
+            Asserts.AssertStatusCode(response, 200);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
     }
@@ -67,18 +65,17 @@ public class Task40Tests : BaseApiTest
 
         CreateUsers(3, true);
 
-        var response = ReadApiActions.GetUsers();
-        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
-        var expectedUserCount = users.Count(_ => _.Age < ageLimit && _.Age != null);
+        var expectedUserCount = GetUserModels()
+            .Count(_ => _.Age < ageLimit && _.Age != null);
 
         #endregion
 
-        response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
-        var actualUsers = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        var response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
+        var actualUsers = response.ToModel<List<UserModel>>();
 
         Assert.Multiple(() =>
         {
-            AssertWrapper.AssertStatusCode(response, 200);
+            Asserts.AssertStatusCode(response, 200);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
 
@@ -101,18 +98,16 @@ public class Task40Tests : BaseApiTest
 
         CreateUsers(3);
 
-        var response = ReadApiActions.GetUsers();
-        var users = JsonHelper.DeserializeObject<List<UserModel>>(response);
-        var expectedUserCount = users.Count(_ => _.Sex == filterValue);
+        var expectedUserCount = GetUserModels().Count(_ => _.Sex == filterValue);
 
         #endregion
 
-        response = ReadApiActions.GetUsers((paramName, filterValue));
-        var actualUsers = JsonHelper.DeserializeObject<List<UserModel>>(response);
+        var response = ReadApiActions.GetUsers((paramName, filterValue));
+        var actualUsers = response.ToModel<List<UserModel>>();
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)response.StatusCode, Is.EqualTo(200));
+            Asserts.AssertStatusCode(response, 200);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
     }
