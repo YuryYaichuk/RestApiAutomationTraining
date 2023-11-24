@@ -1,4 +1,6 @@
-﻿using RestSharp;
+﻿using RestApiAutomationTraining.Helpers;
+using RestApiAutomationTraining.Models;
+using RestSharp;
 
 namespace RestApiAutomationTraining.ApiActions;
 
@@ -37,5 +39,14 @@ public class ReadApiActions
         }
         var response = _client.Execute(request);
         return response;
+    }
+
+    public List<UserModel> GetUserModels()
+    {
+        var response = GetUsers();
+
+        Assert.That((int)response.StatusCode, Is.EqualTo(200));
+
+        return JsonHelper.DeserializeObject<List<UserModel>>(response);
     }
 }

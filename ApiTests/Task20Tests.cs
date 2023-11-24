@@ -33,7 +33,7 @@ public class Task20Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)response.StatusCode, Is.EqualTo(200));
+            AssertWrapper.AssertStatusCode(getZipCodesResponse, 200);
             Assert.That(zipCodes, Has.Count.EqualTo(2));
         });
 

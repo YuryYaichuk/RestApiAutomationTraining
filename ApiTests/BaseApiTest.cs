@@ -34,12 +34,19 @@ public class BaseApiTest
         {
             if (addAge) age = random.Next(1, 124);
             var randomUser = UserModel.GenerateRandomUser(age: age);
-            WriteApiActions.CreateUser(randomUser);
+            var response = WriteApiActions.CreateUser(randomUser);
+            AssertWrapper.AssertStatusCode(response, 201);
             newUsers.Add(randomUser);
             Thread.Sleep(1000);
         }
 
         return newUsers;
+    }
+
+    protected void AddNewZipCodes(params string[] zipCodes)
+    {
+        var response = WriteApiActions.CreateZipCodes(zipCodes);
+        AssertWrapper.AssertStatusCode(response, 201);
     }
 
     protected void ClearZipCodes()

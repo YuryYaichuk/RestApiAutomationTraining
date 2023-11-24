@@ -78,7 +78,7 @@ public class Task40Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Assert.That((int)response.StatusCode, Is.EqualTo(200));
+            AssertWrapper.AssertStatusCode(response, 200);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
 
@@ -94,7 +94,7 @@ public class Task40Tests : BaseApiTest
     [Test]
     public void GetUsers_FilteredBySex_Valid()
     {
-        const SexEnum filterValue = SexEnum.FEMALE;
+        var filterValue = SexEnum.FEMALE.ToString();
         const string paramName = "sex";
 
         #region Test pre-setup
@@ -107,7 +107,7 @@ public class Task40Tests : BaseApiTest
 
         #endregion
 
-        response = ReadApiActions.GetUsers((paramName, filterValue.ToString()));
+        response = ReadApiActions.GetUsers((paramName, filterValue));
         var actualUsers = JsonHelper.DeserializeObject<List<UserModel>>(response);
 
         Assert.Multiple(() =>

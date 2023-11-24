@@ -43,4 +43,13 @@ public class WriteApiActions
         var response = _client.Execute(request);
         return response;
     }
+
+    public RestResponse UpdateUser(UpdateUserDto user)
+    {
+        const string uri = "/users";
+        var request = new RestRequest(uri, Method.Patch);
+        request.AddJsonBody(user);
+        var response = _client.Execute(request);
+        return response;
+    }
 }

@@ -47,22 +47,6 @@ public class Task30Tests : BaseApiTest
             Assert.That((int)createUserResponse.StatusCode, Is.EqualTo(201));
             Assert.That(expectedUser, Is.Not.Null);
         });
-
-        /*
-             * Bug: The field Sex is populated with different value
-             * 
-             * Preconditions:
-             * - the user is authorized
-             * 
-             * Steps:
-             * 1. Send POST request to /users endpoint with a user in the body
-             * where Sex field is MALE
-             * 
-             * 2. Send GET request to /users endpoint and check results
-             * 
-             * Expected result: a new user is created with Sex = MALE
-             * Actual result: a new user is created with Sex = FEMALE
-             */
     }
 
     [Test]
