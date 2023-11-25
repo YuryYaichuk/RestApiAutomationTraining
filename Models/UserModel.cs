@@ -3,14 +3,14 @@ using RestApiAutomationTraining.Helpers;
 
 namespace RestApiAutomationTraining.Models;
 
-public class UserModel
+public record UserModel
 {
     public int? Age { get; set; }
-    public string Name { get; set; }
-    public string Sex { get; set; }
+    public string? Name { get; set; }
+    public string? Sex { get; set; }
     public string? ZipCode { get; set; }
 
-    public UserModel(int? age, string name, string sex, string? zipCode)
+    public UserModel(int? age, string? name, string? sex, string? zipCode)
     {
         Age = age;
         Name = name;
@@ -29,19 +29,21 @@ public class UserModel
             zipCode: zipCode);
     }
 
-    public override string ToString() =>
-        $"Name: [{Name}], Sex: [{Sex}], Age: [{Age}], ZipCode: [{ZipCode}]";
-
-    public override bool Equals(object? obj)
+    public override string? ToString()
     {
-        if (obj == null || obj is not UserModel) return false;
-
-        var incomingObj = (UserModel)obj;
-        return Name == incomingObj.Name &&
-            Sex == incomingObj.Sex &&
-            Age == incomingObj.Age &&
-            ZipCode == incomingObj.ZipCode;
+        return $"Name: [{Name}], Sex: [{Sex}], Age: [{Age}], ZipCode: [{ZipCode}]";
     }
+
+    //public override bool Equals(object? obj)
+    //{
+    //    if (obj == null || obj is not UserModel) return false;
+
+    //    var incomingObj = (UserModel)obj;
+    //    return Name == incomingObj.Name &&
+    //        Sex == incomingObj.Sex &&
+    //        Age == incomingObj.Age &&
+    //        ZipCode == incomingObj.ZipCode;
+    //}
 }
 
 public class UpdateUserDto
