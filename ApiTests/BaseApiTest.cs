@@ -18,21 +18,14 @@ public class BaseApiTest
         WriteApiActions = new WriteApiActions(ApiClientForWrite.GetClient);
     }
 
-    [TearDown]
-    protected void TestCleanup()
-    {
-
-    }
-
     protected List<UserModel> CreateUsers(int numberOfUsers, bool addAge = false)
     {
         var newUsers = new List<UserModel>();
-        var random = new Random();
         int? age = null;
 
         for (int i = 0; i < numberOfUsers; i++)
         {
-            if (addAge) age = random.Next(1, 124);
+            if (addAge) age = Random.Next(1, 124);
             var randomUser = UserModel.GenerateRandomUser(age: age);
             var response = WriteApiActions.CreateUser(randomUser);
             Asserts.AssertStatusCode(response, 201);
@@ -87,7 +80,7 @@ public class BaseApiTest
             Thread.Sleep(1000);
         }
 
-        if (GetUserModels().Count != 0)
+        if (GetUserModels().Count > 0)
             throw new Exception("Not all users cleared");
     }
 

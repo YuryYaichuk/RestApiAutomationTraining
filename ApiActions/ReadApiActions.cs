@@ -20,6 +20,7 @@ public class ReadApiActions
         const string uri = "/zip-codes";
         var request = new RestRequest(uri);
         var response = _client.Execute(request);
+
         return response;
     }
 
@@ -36,6 +37,7 @@ public class ReadApiActions
             }
         }
         var response = _client.Execute(request);
+
         return response;
     }
 }

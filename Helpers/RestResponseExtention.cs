@@ -6,8 +6,9 @@ public static class RestResponseExtention
 {
     public static T ToModel<T>(this RestResponse response)
     {
-        Assert.That(response.IsSuccessful, Is.True);
+        if(response.IsSuccessful)
+            return JsonHelper.DeserializeObject<T>(response);
 
-        return JsonHelper.DeserializeObject<T>(response);
+        throw new Exception($"Response is invalid. Current status is {response.StatusCode}");
     }
 }

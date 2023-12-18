@@ -23,6 +23,7 @@ public class WriteApiActions
         var request = new RestRequest(uri, Method.Post);
         request.AddJsonBody(zipCodes);
         var response = _client.Execute(request);
+
         return response;
     }
 
@@ -32,6 +33,7 @@ public class WriteApiActions
         var request = new RestRequest(uri, Method.Post);
         request.AddJsonBody(user);
         var response = _client.Execute(request);
+
         return response;
     }
 
@@ -41,6 +43,7 @@ public class WriteApiActions
         var request = new RestRequest(uri, Method.Delete);
         request.AddJsonBody(user);
         var response = _client.Execute(request);
+
         return response;
     }
 
@@ -50,6 +53,7 @@ public class WriteApiActions
         var request = new RestRequest(uri, Method.Patch);
         request.AddJsonBody(user);
         var response = _client.Execute(request);
+
         return response;
     }
 }
