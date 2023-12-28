@@ -76,7 +76,7 @@ public class BaseApiTest
             string randomZipCode = StringHelper.GetRandomNumericString(6);
             var modifiedUser = UserModel.GenerateRandomUser(randomZipCode);
 
-            WriteApiActions.UpdateUser(new UpdateUserDto(modifiedUser, user));
+            WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, user));
             Thread.Sleep(1000);
         }
 
