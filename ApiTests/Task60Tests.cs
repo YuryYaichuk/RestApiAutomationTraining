@@ -6,19 +6,16 @@ namespace RestApiAutomationTraining.ApiTests;
 
 public class Task60Tests : BaseApiTest
 {
-    [SetUp]
-    protected void TestSetup()
-    {
-        ClearUsers();
-    }
+    /* 
+     * Scenario #1
+     * Given I am authorized user
+     * When I send DELETE request to /users endpoint
+     * And Request body contains user to delete
+     * Then I get 204 response code
+     * And User is deleted
+     * And Zip code is returned in list of available zip codes
+     */
 
-    //Scenario #1         
-    //Given I am authorized user
-    //When I send DELETE request to /users endpoint
-    //And Request body contains user to delete
-    //Then I get 204 response code
-    //And User is deleted
-    //And Zip code is returned in list of available zip codes
     [Test]
     public void DeleteUser_UserDeleted_Valid()
     {
@@ -30,18 +27,16 @@ public class Task60Tests : BaseApiTest
         var expectedUser = UserModel.GenerateRandomUser(expectedZipCode, Random.Next(1, 124));
         AddNewUser(expectedUser);
 
-        var userToDelete = GetUserModels().First();
-
         #endregion
 
-        var deleteUserResponse = WriteApiActions.DeleteUser(userToDelete);
+        var deleteUserResponse = WriteApiActions.DeleteUser(expectedUser);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(deleteUserResponse, HttpStatusCode.NoContent);
-            Assert.That(GetUserModels().Any(u => u.Name == userToDelete.Name), Is.False,
-                $"User was not deleted: [{userToDelete}]");
-            Assert.That(GetZipCodesModel().Where(zip => zip == userToDelete.ZipCode).ToList(), Has.Count.EqualTo(1),
+            Assert.That(GetUserModels().Any(u => u.Name == expectedUser.Name), Is.False,
+                $"User was not deleted: [{expectedUser}]");
+            Assert.That(GetZipCodesModel().Where(zip => zip == expectedUser.ZipCode).ToList(), Has.Count.EqualTo(1),
                 $"Zip codes returned to list of available zip codes");
         });
     }
@@ -55,6 +50,7 @@ public class Task60Tests : BaseApiTest
      * And User is deleted
      * And Zip code is returned in list of available zip codes
     */
+
     [Test]
     public void DeleteUser_UserDeletedIfRequiredFieldsOnlySpecified_Valid()
     {
@@ -66,7 +62,7 @@ public class Task60Tests : BaseApiTest
         var expectedUser = UserModel.GenerateRandomUser(expectedZipCode, Random.Next(1, 124));
         AddNewUser(expectedUser);
 
-        var userToDelete = GetUserModels().First() with
+        var userToDelete = expectedUser with
         {
             Age = null,
             ZipCode = null
@@ -99,6 +95,7 @@ public class Task60Tests : BaseApiTest
      * Then I get 409 response code
      * And User is not deleted
      */
+
     [Test]
     public void DeleteUser_RequiredFieldNameMissing_Invalid()
     {
@@ -110,7 +107,7 @@ public class Task60Tests : BaseApiTest
         var expectedUser = UserModel.GenerateRandomUser(expectedZipCode, Random.Next(1, 124));
         AddNewUser(expectedUser);
 
-        var userToDelete = GetUserModels().First() with { Name = null };
+        var userToDelete = expectedUser with { Name = null };
 
         #endregion
 

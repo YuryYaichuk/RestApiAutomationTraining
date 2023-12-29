@@ -1,5 +1,4 @@
 ﻿using RestApiAutomationTraining.ApiActions;
-using RestApiAutomationTraining.Enums;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
 using System.Net;
@@ -9,13 +8,6 @@ namespace RestApiAutomationTraining.ApiTests;
 [TestFixture]
 public class Task50Tests : BaseApiTest
 {
-    [SetUp]
-    protected void TestSetup()
-    {
-        ClearUsers();
-    }
-
-
     /*
      * Scenario #1 
      * Given I am authorized user 
@@ -30,26 +22,22 @@ public class Task50Tests : BaseApiTest
     {
         #region Test pre-setup
 
-        CreateUsers(1, true);
-        var userToModify = GetUserModels().Last();
+        var userToModify = CreateUsers(1).First();
 
         string randomZipCode = StringHelper.GetRandomNumericString(5);
         AddNewZipCodes(randomZipCode);
 
         #endregion
 
-        var modifiedUser = new UserModel(StringHelper.GenerateName(8),
-            SexEnum.FEMALE.ToString(), 100, randomZipCode);
-
+        var modifiedUser = UserModel.GenerateRandomUser(randomZipCode, 100);
         var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, userToModify));
-        var originalUser = GetUserModels().SingleOrDefault(user => user.Name == userToModify.Name);
-        var updatedUser = GetUserModels().SingleOrDefault(user => user.Name == modifiedUser.Name);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.OK);
-            Assert.That(originalUser, Is.Null);
-            Assert.That(updatedUser, Is.EqualTo(modifiedUser));
+            Assert.That(GetUserModels().Where(user => user.Name == userToModify.Name).ToList(), Has.Count.EqualTo(0),
+                $"User was not updated [{userToModify}]");
+            Assert.That(GetUserModels(), Does.Contain(modifiedUser), $"Updated user was not found: [{modifiedUser}]");
         });
     }
 
@@ -58,26 +46,22 @@ public class Task50Tests : BaseApiTest
     {
         #region Test pre-setup
 
-        CreateUsers(1, true);
-        var userToModify = GetUserModels().Last();
+        var userToModify = CreateUsers(1).First();
 
         string randomZipCode = StringHelper.GetRandomNumericString(5);
         AddNewZipCodes(randomZipCode);
 
         #endregion
 
-        var modifiedUser = new UserModel(StringHelper.GenerateName(8),
-            SexEnum.FEMALE.ToString(), 100, randomZipCode);
-
+        var modifiedUser = UserModel.GenerateRandomUser(randomZipCode, 100);
         var updateUserResponse = WriteApiActions.UpdateUserUsingPut(new UpdateUserDto(modifiedUser, userToModify));
-        var originalUser = GetUserModels().SingleOrDefault(user => user.Name == userToModify.Name);
-        var updatedUser = GetUserModels().SingleOrDefault(user => user.Name == modifiedUser.Name);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.OK);
-            Assert.That(originalUser, Is.Null);
-            Assert.That(updatedUser, Is.EqualTo(modifiedUser));
+            Assert.That(GetUserModels().Where(user => user.Name == userToModify.Name).ToList(), Has.Count.EqualTo(0),
+                $"User was not updated [{userToModify}]");
+            Assert.That(GetUserModels(), Does.Contain(modifiedUser), $"Updated user was not found: [{modifiedUser}]");
         });
     }
 
@@ -96,30 +80,23 @@ public class Task50Tests : BaseApiTest
     {
         #region Test pre-setup
 
-        CreateUsers(1, true);
-        var userToModify = GetUserModels().Last();
-
-        string randomZipCode = StringHelper.GetRandomNumericString(6);
+        var userToModify = CreateUsers(1).First();
+        var unavailableZipCode = StringHelper.GetRandomNumericString(6);
 
         #endregion
 
-        var modifiedUser = new UserModel(StringHelper.GenerateName(8),
-            SexEnum.FEMALE.ToString(), Random.Next(1, 123), randomZipCode);
-
+        var modifiedUser = UserModel.GenerateRandomUser(unavailableZipCode, Random.Next(1, 123));
         var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, userToModify));
-        var originalUser = GetUserModels().SingleOrDefault(user => user.Name == userToModify.Name);
-        var updatedUser = GetUserModels().SingleOrDefault(user => user.Name == modifiedUser.Name);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.FailedDependency);
-            Assert.That(updatedUser, Is.Null);
-            Assert.That(originalUser, Is.EqualTo(userToModify));
+            Assert.That(GetUserModels(), Does.Contain(userToModify), $"Original user was not found: [{userToModify}]");
+            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser), 
+                $"User was updated: [{userToModify}] replaced with [{modifiedUser}]");
         });
-
-        /*
-             * Bug: Updating user with unavailable Zip Code deletes the original user
-             */
+        
+        // Bug: Updating user with unavailable Zip Code deletes the original user
     }
 
     [Test]
@@ -127,30 +104,23 @@ public class Task50Tests : BaseApiTest
     {
         #region Test pre-setup
 
-        CreateUsers(1, true);
-        var userToModify = GetUserModels().Last();
-
-        string randomZipCode = StringHelper.GetRandomNumericString(6);
+        var userToModify = CreateUsers(1).First();
+        var unavailableZipCode = StringHelper.GetRandomNumericString(6);
 
         #endregion
 
-        var modifiedUser = new UserModel(StringHelper.GenerateName(8),
-            SexEnum.FEMALE.ToString(), Random.Next(1, 123), randomZipCode);
-
+        var modifiedUser = UserModel.GenerateRandomUser(unavailableZipCode, Random.Next(1, 123));
         var updateUserResponse = WriteApiActions.UpdateUserUsingPut(new UpdateUserDto(modifiedUser, userToModify));
-        var originalUser = GetUserModels().SingleOrDefault(user => user.Name == userToModify.Name);
-        var updatedUser = GetUserModels().SingleOrDefault(user => user.Name == modifiedUser.Name);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.FailedDependency);
-            Assert.That(updatedUser, Is.Null);
-            Assert.That(originalUser, Is.EqualTo(userToModify));
+            Assert.That(GetUserModels(), Does.Contain(userToModify), $"Original user was not found: [{userToModify}]");
+            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser),
+                $"User was updated: [{userToModify}] replaced with [{modifiedUser}]");
         });
 
-        /*
-             * Bug: Updating user with unavailable Zip Code deletes the original user
-             */
+        // Bug: Updating user with unavailable Zip Code deletes the original user
     }
 
 
@@ -169,10 +139,9 @@ public class Task50Tests : BaseApiTest
     {
         #region Test pre-setup
 
-        CreateUsers(1, true);
-        var userToModify = GetUserModels().Last();
+        var userToModify = CreateUsers(1).First();
 
-        string randomZipCode = StringHelper.GetRandomNumericString(6);
+        var randomZipCode = StringHelper.GetRandomNumericString(6);
         AddNewZipCodes(randomZipCode);
 
         #endregion
@@ -183,19 +152,16 @@ public class Task50Tests : BaseApiTest
         };
 
         var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, userToModify));
-        var originalUser = GetUserModels().SingleOrDefault(user => user.Name == userToModify.Name);
-        var updatedUser = GetUserModels().SingleOrDefault(user => user.ZipCode == modifiedUser.ZipCode);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.Conflict);
-            Assert.That(updatedUser, Is.Null);
-            Assert.That(originalUser, Is.EqualTo(userToModify));
+            Assert.That(GetUserModels(), Does.Contain(userToModify), $"Original user was not found: [{userToModify}]");
+            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser),
+                $"User was updated: [{userToModify}] replaced with [{modifiedUser}]");
         });
 
-        /*
-             * Bug: Updating user with invalid data deletes the original user
-             */
+        // Bug: Updating user with invalid data deletes the original user
     }
 
     [Test]
@@ -203,10 +169,9 @@ public class Task50Tests : BaseApiTest
     {
         #region Test pre-setup
 
-        CreateUsers(1, true);
-        var userToModify = GetUserModels().Last();
+        var userToModify = CreateUsers(1).First();
 
-        string randomZipCode = StringHelper.GetRandomNumericString(6);
+        var randomZipCode = StringHelper.GetRandomNumericString(6);
         AddNewZipCodes(randomZipCode);
 
         #endregion
@@ -217,19 +182,16 @@ public class Task50Tests : BaseApiTest
         };
 
         var updateUserResponse = WriteApiActions.UpdateUserUsingPut(new UpdateUserDto(modifiedUser, userToModify));
-        var originalUser = GetUserModels().SingleOrDefault(user => user.Name == userToModify.Name);
-        var updatedUser = GetUserModels().SingleOrDefault(user => user.ZipCode == modifiedUser.ZipCode);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.Conflict);
-            Assert.That(updatedUser, Is.Null);
-            Assert.That(originalUser, Is.EqualTo(userToModify));
+            Assert.That(GetUserModels(), Does.Contain(userToModify), $"Original user was not found: [{userToModify}]");
+            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser),
+                $"User was updated: [{userToModify}] replaced with [{modifiedUser}]");
         });
 
-        /*
-             * Bug: Updating user with invalid data deletes the original user
-             */
+        // Bug: Updating user with invalid data deletes the original user
     }
 
     [Test]
@@ -237,10 +199,9 @@ public class Task50Tests : BaseApiTest
     {
         #region Test pre-setup
 
-        CreateUsers(1, true);
-        var userToModify = GetUserModels().Last();
+        var userToModify = CreateUsers(1).First();
 
-        string randomZipCode = StringHelper.GetRandomNumericString(6);
+        var randomZipCode = StringHelper.GetRandomNumericString(6);
         AddNewZipCodes(randomZipCode);
 
         #endregion
@@ -251,30 +212,26 @@ public class Task50Tests : BaseApiTest
         };
 
         var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, userToModify));
-        var originalUser = GetUserModels().SingleOrDefault(user => user.Name == userToModify.Name);
-        var updatedUser = GetUserModels().SingleOrDefault(user => user.Name == modifiedUser.Name);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.Conflict);
-            Assert.That(updatedUser, Is.Null);
-            Assert.That(originalUser, Is.EqualTo(userToModify));
+            Assert.That(GetUserModels(), Does.Contain(userToModify), $"Original user was not found: [{userToModify}]");
+            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser),
+                $"User was updated: [{userToModify}] replaced with [{modifiedUser}]");
         });
 
-        /*
-             * Bug: Updating user with invalid data deletes the original user
-             */
+        // Bug: Updating user with invalid data deletes the original user
     }
-    
+
     [Test]
     public void UpdateUser_WithPut_SexMissed_Invalid()
     {
         #region Test pre-setup
 
-        CreateUsers(1, true);
-        var userToModify = GetUserModels().Last();
+        var userToModify = CreateUsers(1).First();
 
-        string randomZipCode = StringHelper.GetRandomNumericString(6);
+        var randomZipCode = StringHelper.GetRandomNumericString(6);
         AddNewZipCodes(randomZipCode);
 
         #endregion
@@ -285,18 +242,15 @@ public class Task50Tests : BaseApiTest
         };
 
         var updateUserResponse = WriteApiActions.UpdateUserUsingPut(new UpdateUserDto(modifiedUser, userToModify));
-        var originalUser = GetUserModels().SingleOrDefault(user => user.Name == userToModify.Name);
-        var updatedUser = GetUserModels().SingleOrDefault(user => user.Name == modifiedUser.Name);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.Conflict);
-            Assert.That(updatedUser, Is.Null);
-            Assert.That(originalUser, Is.EqualTo(userToModify));
+            Assert.That(GetUserModels(), Does.Contain(userToModify), $"Original user was not found: [{userToModify}]");
+            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser),
+                $"User was updated: [{userToModify}] replaced with [{modifiedUser}]");
         });
 
-        /*
-             * Bug: Updating user with invalid data deletes the original user
-             */
+        // Bug: Updating user with invalid data deletes the original user
     }
 }
