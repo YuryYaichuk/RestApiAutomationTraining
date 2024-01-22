@@ -21,15 +21,18 @@ public class BaseApiTest
     protected List<UserModel> CreateUsers(int numberOfUsers, bool addAge = false)
     {
         var newUsers = new List<UserModel>();
-        int? age = null;
+        //int? age = null;
 
         for (int i = 0; i < numberOfUsers; i++)
         {
-            if (addAge) age = Random.Next(1, 124);
-            var randomUser = UserModel.GenerateRandomUser(age: age);
-            var response = WriteApiActions.CreateUser(randomUser);
-            Asserts.AssertStatusCode(response, 201);
+            var zipCode = StringHelper.GetRandomNumericString(6);
+            AddNewZipCodes(zipCode);
+
+            //if (addAge) age = Random.Next(1, 124);
+            var randomUser = UserModel.GenerateRandomUser(zipCode, Random.Next(1, 124));
+            AddNewUser(randomUser);
             newUsers.Add(randomUser);
+
             Thread.Sleep(1000);
         }
 
@@ -76,7 +79,7 @@ public class BaseApiTest
             string randomZipCode = StringHelper.GetRandomNumericString(6);
             var modifiedUser = UserModel.GenerateRandomUser(randomZipCode);
 
-            WriteApiActions.UpdateUser(new UpdateUserDto(modifiedUser, user));
+            WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, user));
             Thread.Sleep(1000);
         }
 
