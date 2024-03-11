@@ -38,7 +38,7 @@ public class Task40Tests : BaseApiTest
 
         #region Test pre-setup
 
-        CreateUsers(3, true);
+        CreateUsers(3);
 
         var expectedUserCount = GetUserModels()
             .Count(_ => _.Age > ageLimit && _.Age != null);
@@ -63,7 +63,7 @@ public class Task40Tests : BaseApiTest
 
         #region Test pre-setup
 
-        CreateUsers(3, true);
+        CreateUsers(3);
 
         var expectedUserCount = GetUserModels()
             .Count(_ => _.Age < ageLimit && _.Age != null);
