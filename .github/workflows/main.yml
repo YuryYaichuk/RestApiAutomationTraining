@@ -2,7 +2,7 @@ name: Test Rest API
 on: workflow_dispatch
 jobs:
     run-and-test:
-        name: run-and-test
+        name: run and test
         runs-on: ubuntu-latest
         steps:
 
