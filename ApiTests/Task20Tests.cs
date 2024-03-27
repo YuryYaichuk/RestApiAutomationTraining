@@ -7,11 +7,11 @@ namespace RestApiAutomationTraining.ApiTests;
 [TestFixture]
 public class Task20Tests : BaseApiTest
 {
-    [SetUp]
-    protected void TestSetup()
-    {
-        ClearZipCodes();
-    }
+    //Scenario #1 
+    //Given I am authorized user
+    //When I send GET request to /zip-codes endpoint
+    //Then I get 200 response code
+    //And I get all available zip codes in the application for now
 
     [Test]
     public void GetZipCodes_AvailableZipCodesReturned_Valid()
@@ -21,7 +21,7 @@ public class Task20Tests : BaseApiTest
         var expectedZipCodeList = new List<string>
         {
             StringHelper.GetRandomString(5),
-            StringHelper.GetRandomNumericString(5)
+            StringHelper.GetRandomNumericString(6)
         };
 
         AddNewZipCodes(expectedZipCodeList.ToArray());
@@ -34,7 +34,7 @@ public class Task20Tests : BaseApiTest
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(getZipCodesResponse, 200);
-            Assert.That(zipCodes, Has.Count.EqualTo(2));
+            Asserts.AssertContainsAll(zipCodes, expectedZipCodeList);
         });
 
         /*
@@ -51,13 +51,20 @@ public class Task20Tests : BaseApiTest
          */
     }
 
+    //Scenario #2 
+    //Given I am authorized user
+    //When I send POST request to /zip-codes/expand endpoint
+    //And Request body contains list of zip codes
+    //Then I get 201 response code
+    //And Zip codes from request body are added to available zip codes of application
+
     [Test]
     public void ExpandZipCodes_NewZipCodesAdded_Valid()
     {
         var expectedZipCodeList = new List<string>
         {
             StringHelper.GetRandomString(5),
-            StringHelper.GetRandomNumericString(5)
+            StringHelper.GetRandomNumericString(6)
         };
         var response = WriteApiActions.CreateZipCodes(expectedZipCodeList.ToArray());
         var actualZipCodes = GetZipCodesModel();
@@ -65,9 +72,18 @@ public class Task20Tests : BaseApiTest
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(response, 201);
-            Assert.That(actualZipCodes, Is.EquivalentTo(expectedZipCodeList));
+            Asserts.AssertContainsAll(actualZipCodes, expectedZipCodeList);
         });
     }
+
+    //Scenario #3 
+    //Given I am authorized user
+    //When I send POST request to /zip-codes/expand endpoint
+    //And Request body contains list of zip codes
+    //And List of zip codes has duplications for available zip codes
+    //Then I get 201 response code
+    //And Zip codes from request body are added to available zip codes of application
+    //And There are no duplications in available zip codes
 
     [Test]
     public void ExpandZipCodes_NoDuplicatesCreated_InputAlreadyExists_Valid()
@@ -79,19 +95,12 @@ public class Task20Tests : BaseApiTest
 
         #endregion
 
-        var expectedZipCodeList = new List<string>
-        {
-            duplicatedZipCode,
-            StringHelper.GetRandomNumericString(5)
-        };
-
-        var createZipCodesResponse = WriteApiActions.CreateZipCodes(expectedZipCodeList.ToArray());
-        var actualZipCodes = GetZipCodesModel();
+        var createZipCodesResponse = WriteApiActions.CreateZipCodes(duplicatedZipCode);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(createZipCodesResponse, 201);
-            Assert.That(actualZipCodes, Is.EquivalentTo(expectedZipCodeList));
+            Asserts.AssertCount(1, GetZipCodesModel(), duplicatedZipCode);
         });
 
         /*
@@ -111,6 +120,15 @@ public class Task20Tests : BaseApiTest
          */
     }
 
+    //Scenario #4 
+    //Given I am authorized user
+    //When I send POST request to /zip-codes/expand endpoint
+    //And Request body contains list of zip codes
+    //And List of zip codes has duplications for already used zip codes
+    //Then I get 201 response code
+    //And Zip codes from request body are added to available zip codes of application
+    //And There are no duplications between available zip codes and already used zip codes
+
     [Test]
     public void ExpandZipCodes_NoDuplicatesCreatedForUsedZipCodes_Valid()
     {
@@ -124,18 +142,12 @@ public class Task20Tests : BaseApiTest
 
         #endregion
 
-        var expectedZipCodeList = new List<string>
-        {
-            StringHelper.GetRandomNumericString(5)
-        };
-
-        var createZipCodeResponse = WriteApiActions.CreateZipCodes(expectedZipCodeList.Single(), usedZipCode);
-        var actualZipCodes = GetZipCodesModel();
+        var createZipCodeResponse = WriteApiActions.CreateZipCodes(usedZipCode);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(createZipCodeResponse, 201);
-            Assert.That(actualZipCodes, Is.EquivalentTo(expectedZipCodeList));
+            Asserts.AssertCount(0, GetZipCodesModel(), usedZipCode);
         });
 
         /*

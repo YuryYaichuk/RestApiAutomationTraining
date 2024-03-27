@@ -1,12 +1,18 @@
-﻿using RestApiAutomationTraining.ApiActions;
+﻿using NUnit.Allure.Core;
+using RestApiAutomationTraining.ApiActions;
 using RestApiAutomationTraining.ApiClient;
 using RestApiAutomationTraining.Helpers;
+using RestApiAutomationTraining.Logging;
 using RestApiAutomationTraining.Models;
+using RestSharp;
 
 namespace RestApiAutomationTraining.ApiTests;
 
-public class BaseApiTest
+[TestFixture]
+[AllureNUnit]
+public abstract class BaseApiTest
 {
+    public static TestContext TestContext;
     protected static Random Random { get; } = new();
     protected ReadApiActions ReadApiActions { get; private set; }
     protected WriteApiActions WriteApiActions { get; private set; }
@@ -18,23 +24,32 @@ public class BaseApiTest
         WriteApiActions = new WriteApiActions(ApiClientForWrite.GetClient);
     }
 
-    protected List<UserModel> CreateUsers(int numberOfUsers, bool addAge = false)
+    [SetUp]
+    protected virtual void TestSetup()
+    {
+        TestResults.SetLogger(TestContext.CurrentContext);
+    }
+
+    protected List<UserModel> CreateUsers(int numberOfUsers)
     {
         var newUsers = new List<UserModel>();
-        //int? age = null;
+        var zipCodes = new List<string>();
 
-        for (int i = 0; i < numberOfUsers; i++)
+        for (var i = 0; i < numberOfUsers; i++)
         {
-            var zipCode = StringHelper.GetRandomNumericString(6);
-            AddNewZipCodes(zipCode);
+            zipCodes.Add(StringHelper.GetRandomNumericString(6));
+        }
 
-            //if (addAge) age = Random.Next(1, 124);
-            var randomUser = UserModel.GenerateRandomUser(zipCode, Random.Next(1, 124));
+        AddNewZipCodes(zipCodes.ToArray());
+
+        zipCodes.ForEach(zip =>
+        {
+            var randomUser = UserModel.GenerateRandomUser(zip, Random.Next(1, 124));
             AddNewUser(randomUser);
             newUsers.Add(randomUser);
 
             Thread.Sleep(1000);
-        }
+        });
 
         return newUsers;
     }
@@ -42,13 +57,15 @@ public class BaseApiTest
     protected void AddNewZipCodes(params string[] zipCodes)
     {
         var response = WriteApiActions.CreateZipCodes(zipCodes);
-        Asserts.AssertStatusCode(response, 201);
+
+        CheckResponseIsSuccessful(response);
     }
 
     protected void AddNewUser(UserModel user)
     {
         var response = WriteApiActions.CreateUser(user);
-        Asserts.AssertStatusCode(response, 201);
+
+        CheckResponseIsSuccessful(response);
     }
 
     protected void ClearZipCodes()
@@ -90,6 +107,25 @@ public class BaseApiTest
     protected List<UserModel> GetUserModels() =>
         ReadApiActions.GetUsers().ToModel<List<UserModel>>();
 
-    protected List<string> GetZipCodesModel() =>
-        ReadApiActions.GetZipCodes().ToModel<List<string>>();
+    protected List<string> GetZipCodesModel()
+    {
+        var response = ReadApiActions.GetZipCodes();
+
+        CheckResponseIsSuccessful(response);
+
+        return response.ToModel<List<string>>();
+    }
+    
+    private static void CheckResponseIsSuccessful(RestResponse response)
+    {
+        if (TestResults.Log is null) throw new Exception(
+            "Logger was not initialized, make sure CustomLogger.SetLogger() is used in test pre-setup");
+
+        if (!response.IsSuccessful)
+        {
+            TestResults.Log.Error("Unexpected StatusCode {StatusCode} for endpoint: {Method} {Uri}",
+                response.StatusCode, response.Request.Method, response.ResponseUri);
+            Assert.Fail("For details check log file");
+        }
+    }
 }

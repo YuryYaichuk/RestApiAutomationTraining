@@ -8,11 +8,16 @@ namespace RestApiAutomationTraining.ApiTests;
 [TestFixture]
 public class Task30Tests : BaseApiTest
 {
-    [SetUp]
-    protected void TestSetup()
-    {
-        ClearUsers();
-    }
+    /*
+     * Scenario #1
+     * Given I am authorized user
+     * When I send POST request to /users endpoint
+     * And Request body contains user to add
+     * And All fields are filled in
+     * Then I get 201 response code
+     * And User is added to application
+     * And Zip code is removed from available zip codes of application
+    */
 
     [Test]
     public void CreateUser_AllFieldsPopulated_Valid()
@@ -26,64 +31,84 @@ public class Task30Tests : BaseApiTest
 
         var expectedUser = UserModel.GenerateRandomUser(randomZipCode, Random.Next(1, 124));
         var createUserResponse = WriteApiActions.CreateUser(expectedUser);
-        var actualUser = GetUserModels().SingleOrDefault(_ =>_.Name == expectedUser.Name);
-        var zipCodes = GetZipCodesModel();
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(createUserResponse, 201);
-            Assert.That(actualUser, Is.EqualTo(expectedUser));
-            Assert.That(zipCodes, Does.Not.Contain(expectedUser.ZipCode));
+            Asserts.AssertContains(GetUserModels(), expectedUser);
+            Asserts.AssertDoesNotContain(GetZipCodesModel(), expectedUser.ZipCode);
         });
     }
+
+    /*
+     * Scenario #2
+     * Given I am authorized user
+     * When I send POST request to /users endpoint
+     * And Request body contains user to add
+     * And Required fields are filled in
+     * Then I get 201 response code
+     * And User is added to application
+     */
 
     [Test]
     public void CreateUser_RequiredFieldsOnlyPopulated_Valid()
     {
         var expectedUser = UserModel.GenerateRandomUser();
         var createUserResponse = WriteApiActions.CreateUser(expectedUser);
-        var actualUser = GetUserModels().SingleOrDefault(_ => _.Name == expectedUser.Name);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(createUserResponse, 201);
-            Assert.That(actualUser, Is.EqualTo(expectedUser));
+            Asserts.AssertContains(GetUserModels(), expectedUser);
         });
     }
+
+    //Scenario #3
+    //Given I am authorized user
+    //When I send POST request to /users endpoint
+    //And Request body contains user to add
+    //And All fields are filled in
+    //And Zip code is incorrect(unavailable)
+    //Then I get 424 response code
+    //And User is not added to application
 
     [Test]
     public void CreateUser_NotExistingZipCode_Invalid()
     {
-        var fakeZipCode = StringHelper.GetRandomNumericString(5);
-        var expectedUser = UserModel.GenerateRandomUser(fakeZipCode, Random.Next(1, 124));
+        var expectedUser = UserModel.GenerateRandomUser(
+            StringHelper.GetRandomNumericString(6), Random.Next(1, 124));
         var createUserResponse = WriteApiActions.CreateUser(expectedUser);
-        var actualUser = GetUserModels().SingleOrDefault(_ 
-            => _.Name == expectedUser.Name && _.ZipCode == expectedUser.ZipCode);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(createUserResponse, 424);
-            Assert.That(actualUser, Is.Null);
+            Asserts.AssertDoesNotContain(GetUserModels(), expectedUser);
         });
     }
+
+    //Scenario #4
+    //Given I am authorized user
+    //When I send POST request to /users endpoint
+    //And Request body contains user to add with the same name and sex as existing user in the system
+    //Then I get 400 response code
+    //And User is not added to application
 
     [Test]
     public void CreateUser_UserAlreadyExists_Invalid()
     {
         #region Test pre-setup
 
-        UserModel expectedUser = UserModel.GenerateRandomUser();
+        var expectedUser = UserModel.GenerateRandomUser();
         AddNewUser(expectedUser);
 
         #endregion
 
-        var response = WriteApiActions.CreateUser(expectedUser);
-        var usersCount = GetUserModels().Count(_ => _.Name == expectedUser.Name);
+        var createUserResponse = WriteApiActions.CreateUser(expectedUser);
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 400);
-            Assert.That(usersCount, Is.EqualTo(1));
+            Asserts.AssertStatusCode(createUserResponse, 400);
+            Asserts.AssertCount(1, GetUserModels(), expectedUser);
         });
 
         /*
