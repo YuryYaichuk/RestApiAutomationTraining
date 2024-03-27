@@ -59,7 +59,7 @@ public class Task40Tests : BaseApiTest
     public void GetUsers_FilteredByYongerThan_Valid()
     {
         const int ageLimit = 60;
-        const string paramName = "yongerThan";
+        const string paramName = "youngerThan";
 
         #region Test pre-setup
 
