@@ -22,9 +22,8 @@ public class WriteApiActions
         const string uri = "/zip-codes/expand";
         var request = new RestRequest(uri, Method.Post);
         request.AddJsonBody(zipCodes);
-        var response = _client.Execute(request);
 
-        return response;
+        return _client.Execute(request);
     }
 
     public RestResponse CreateUser(UserModel user)
@@ -32,9 +31,8 @@ public class WriteApiActions
         const string uri = "/users";
         var request = new RestRequest(uri, Method.Post);
         request.AddJsonBody(user);
-        var response = _client.Execute(request);
 
-        return response;
+        return _client.Execute(request);
     }
 
     /// <summary>
@@ -47,9 +45,8 @@ public class WriteApiActions
         const string uri = "/users";
         var request = new RestRequest(uri, Method.Delete);
         request.AddJsonBody(user);
-        var response = _client.Execute(request);
 
-        return response;
+        return _client.Execute(request);
     }
 
     /// <summary>
@@ -62,9 +59,8 @@ public class WriteApiActions
         const string uri = "/users";
         var request = new RestRequest(uri, Method.Patch);
         request.AddJsonBody(user);
-        var response = _client.Execute(request);
 
-        return response;
+        return _client.Execute(request);
     }
 
     /// <summary>
@@ -77,8 +73,22 @@ public class WriteApiActions
         const string uri = "/users";
         var request = new RestRequest(uri, Method.Put);
         request.AddJsonBody(user);
-        var response = _client.Execute(request);
 
-        return response;
+        return _client.Execute(request);
+    }
+
+    /// <summary>
+    /// Uploads JSON file with array of users
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
+    public RestResponse UploadUsers(string filePath)
+    {
+        const string uri = "/users/upload";
+
+        var request = new RestRequest(uri, Method.Post);
+        request.AddFile("file", filePath);
+
+        return _client.Execute(request);
     }
 }

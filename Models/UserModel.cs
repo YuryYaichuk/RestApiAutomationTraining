@@ -3,7 +3,7 @@ using RestApiAutomationTraining.Helpers;
 
 namespace RestApiAutomationTraining.Models;
 
-public record UserModel(string? Name, string? Sex, int? Age = null, string? ZipCode = null)
+public record UserModel(string? Name, int? Age, string? Sex, string? ZipCode = null)
 {
     public static UserModel GenerateRandomUser(string? zipCode = null, int? age = null)
     {
@@ -11,7 +11,7 @@ public record UserModel(string? Name, string? Sex, int? Age = null, string? ZipC
         var enumValues = Enum.GetValues(typeof(SexEnum));
         var sex = (SexEnum)enumValues.GetValue(random.Next(0, enumValues.Length));
 
-        return new(StringHelper.GenerateName(7), sex.ToString(), age, zipCode);
+        return new(StringHelper.GenerateName(7), age, sex.ToString(), zipCode);
     }
 
     public override string? ToString() =>
