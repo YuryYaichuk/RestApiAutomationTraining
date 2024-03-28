@@ -45,7 +45,7 @@ public class Task70Tests : BaseApiTest
         {
             Asserts.AssertStatusCode(uploadUsersResponse, HttpStatusCode.Created);
             Asserts.AreEqual(usersJson, getUsersResponse);
-            Asserts.ResponseContainsText($"= {users.Count()}", uploadUsersResponse);
+            Asserts.ResponseContainsText($"Number of users = {users.Count()}", uploadUsersResponse);
         });
     }
 
