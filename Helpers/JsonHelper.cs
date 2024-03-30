@@ -1,6 +1,8 @@
-﻿using System.Text.Json.Serialization;
-using System.Text.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RestSharp;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RestApiAutomationTraining.Helpers;
 
@@ -22,7 +24,7 @@ public class JsonHelper
 
         try
         {
-            model = JsonSerializer.Deserialize<T>(valueToDeserialize, options);
+            model = System.Text.Json.JsonSerializer.Deserialize<T>(valueToDeserialize, options);
         }
         catch (Exception ex)
         {
@@ -31,5 +33,13 @@ public class JsonHelper
         }
 
         return model;
+    }
+
+    public static string SerializeCamelCase(object obj)
+    {
+        return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        });
     }
 }

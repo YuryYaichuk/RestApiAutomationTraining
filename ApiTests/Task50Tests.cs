@@ -1,4 +1,5 @@
-﻿using RestApiAutomationTraining.ApiActions;
+﻿using NUnit.Allure.Attributes;
+using RestApiAutomationTraining.ApiActions;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
 using System.Net;
@@ -18,6 +19,8 @@ public class Task50Tests : BaseApiTest
      */
 
     [Test]
+    [AllureName("Test Update User with PATCH - Updating Age")]
+    [AllureEpic("Task 50")]
     public void UpdateUser_WithPatch_UpdateAge_Valid()
     {
         #region Test pre-setup
@@ -30,7 +33,10 @@ public class Task50Tests : BaseApiTest
         #endregion
 
         var modifiedUser = UserModel.GenerateRandomUser(randomZipCode, 100);
-        var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, userToModify));
+        var payLoad = new UpdateUserDto(modifiedUser, userToModify);
+        var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(payLoad);
+
+        PayloadCollector.AddPayload(payLoad);
 
         Assert.Multiple(() =>
         {
@@ -42,6 +48,8 @@ public class Task50Tests : BaseApiTest
     }
 
     [Test]
+    [AllureName("Test Update User with PUT - Updating Age")]
+    [AllureEpic("Task 50")]
     public void UpdateUser_WithPut_UpdateAge_Valid()
     {
         #region Test pre-setup
@@ -54,7 +62,10 @@ public class Task50Tests : BaseApiTest
         #endregion
 
         var modifiedUser = UserModel.GenerateRandomUser(randomZipCode, 100);
-        var updateUserResponse = WriteApiActions.UpdateUserUsingPut(new UpdateUserDto(modifiedUser, userToModify));
+        var payLoad = new UpdateUserDto(modifiedUser, userToModify);
+        var updateUserResponse = WriteApiActions.UpdateUserUsingPut(payLoad);
+
+        PayloadCollector.AddPayload(payLoad);
 
         Assert.Multiple(() =>
         {
@@ -76,6 +87,9 @@ public class Task50Tests : BaseApiTest
      */
 
     [Test]
+    [AllureName("Test Update User with PATCH - New ZIP Code is Unavailable")]
+    [AllureEpic("Task 50")]
+    [AllureIssue("Bug: Updating user with unavailable Zip Code deletes the original user")]
     public void UpdateUser_WithPatch_UnavailableZipCode_InValid()
     {
         #region Test pre-setup
@@ -86,20 +100,26 @@ public class Task50Tests : BaseApiTest
         #endregion
 
         var modifiedUser = UserModel.GenerateRandomUser(unavailableZipCode, Random.Next(1, 123));
-        var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, userToModify));
+        var payLoad = new UpdateUserDto(modifiedUser, userToModify);
+        var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(payLoad);
+
+        PayloadCollector.AddPayload(payLoad);
 
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.FailedDependency);
             Assert.That(GetUserModels(), Does.Contain(userToModify), $"Original user was not found: [{userToModify}]");
-            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser), 
+            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser),
                 $"User was updated: [{userToModify}] replaced with [{modifiedUser}]");
         });
-        
+
         // Bug: Updating user with unavailable Zip Code deletes the original user
     }
 
     [Test]
+    [AllureName("Test Update User with PUT - New ZIP Code is Unavailable")]
+    [AllureEpic("Task 50")]
+    [AllureIssue("Bug: Updating user with unavailable Zip Code deletes the original user")]
     public void UpdateUser_WithPut_UnavailableZipCode_InValid()
     {
         #region Test pre-setup
@@ -110,7 +130,10 @@ public class Task50Tests : BaseApiTest
         #endregion
 
         var modifiedUser = UserModel.GenerateRandomUser(unavailableZipCode, Random.Next(1, 123));
-        var updateUserResponse = WriteApiActions.UpdateUserUsingPut(new UpdateUserDto(modifiedUser, userToModify));
+        var payLoad = new UpdateUserDto(modifiedUser, userToModify);
+        var updateUserResponse = WriteApiActions.UpdateUserUsingPut(payLoad);
+
+        PayloadCollector.AddPayload(payLoad);
 
         Assert.Multiple(() =>
         {
@@ -135,6 +158,9 @@ public class Task50Tests : BaseApiTest
      */
 
     [Test]
+    [AllureName("Test Update User with PATCH - Name is Missing")]
+    [AllureEpic("Task 50")]
+    [AllureIssue("Bug: Updating user with invalid data deletes the original user")]
     public void UpdateUser_WithPatch_NameMissed_Invalid()
     {
         #region Test pre-setup
@@ -151,7 +177,10 @@ public class Task50Tests : BaseApiTest
             Name = null
         };
 
-        var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, userToModify));
+        var payLoad = new UpdateUserDto(modifiedUser, userToModify);
+        var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(payLoad);
+
+        PayloadCollector.AddPayload(payLoad);
 
         Assert.Multiple(() =>
         {
@@ -165,6 +194,9 @@ public class Task50Tests : BaseApiTest
     }
 
     [Test]
+    [AllureName("Test Update User with PUT - Name is Missing")]
+    [AllureEpic("Task 50")]
+    [AllureIssue("Bug: Updating user with invalid data deletes the original user")]
     public void UpdateUser_WithPut_NameMissed_Invalid()
     {
         #region Test pre-setup
@@ -181,7 +213,10 @@ public class Task50Tests : BaseApiTest
             Name = null
         };
 
-        var updateUserResponse = WriteApiActions.UpdateUserUsingPut(new UpdateUserDto(modifiedUser, userToModify));
+        var payLoad = new UpdateUserDto(modifiedUser, userToModify);
+        var updateUserResponse = WriteApiActions.UpdateUserUsingPut(payLoad);
+
+        PayloadCollector.AddPayload(payLoad);
 
         Assert.Multiple(() =>
         {
@@ -195,6 +230,9 @@ public class Task50Tests : BaseApiTest
     }
 
     [Test]
+    [AllureName("Test Update User with PATCH - Sex is Missing")]
+    [AllureEpic("Task 50")]
+    [AllureIssue("Bug: Updating user with invalid data deletes the original user")]
     public void UpdateUser_WithPatch_SexMissed_Invalid()
     {
         #region Test pre-setup
@@ -211,7 +249,10 @@ public class Task50Tests : BaseApiTest
             Sex = null
         };
 
-        var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(new UpdateUserDto(modifiedUser, userToModify));
+        var payLoad = new UpdateUserDto(modifiedUser, userToModify);
+        var updateUserResponse = WriteApiActions.UpdateUserUsingPatch(payLoad);
+
+        PayloadCollector.AddPayload(payLoad);
 
         Assert.Multiple(() =>
         {
@@ -225,6 +266,9 @@ public class Task50Tests : BaseApiTest
     }
 
     [Test]
+    [AllureName("Test Update User with PUT - Sex is Missing")]
+    [AllureEpic("Task 50")]
+    [AllureIssue("Bug: Updating user with invalid data deletes the original user")]
     public void UpdateUser_WithPut_SexMissed_Invalid()
     {
         #region Test pre-setup
@@ -241,7 +285,10 @@ public class Task50Tests : BaseApiTest
             Sex = null
         };
 
-        var updateUserResponse = WriteApiActions.UpdateUserUsingPut(new UpdateUserDto(modifiedUser, userToModify));
+        var payLoad = new UpdateUserDto(modifiedUser, userToModify);
+        var updateUserResponse = WriteApiActions.UpdateUserUsingPut(payLoad);
+
+        PayloadCollector.AddPayload(payLoad);
 
         Assert.Multiple(() =>
         {

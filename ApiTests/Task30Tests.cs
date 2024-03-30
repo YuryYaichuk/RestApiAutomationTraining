@@ -1,7 +1,9 @@
-﻿using NUnit.Framework.Internal;
+﻿using NUnit.Allure.Attributes;
+using NUnit.Framework.Internal;
 using RestApiAutomationTraining.ApiActions;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
+using System.Net;
 
 namespace RestApiAutomationTraining.ApiTests;
 
@@ -20,6 +22,8 @@ public class Task30Tests : BaseApiTest
     */
 
     [Test]
+    [AllureName("Test Create New User - All Fields Popolated")]
+    [AllureEpic("Task 30")]
     public void CreateUser_AllFieldsPopulated_Valid()
     {
         #region Test pre-setup
@@ -31,10 +35,11 @@ public class Task30Tests : BaseApiTest
 
         var expectedUser = UserModel.GenerateRandomUser(randomZipCode, Random.Next(1, 124));
         var createUserResponse = WriteApiActions.CreateUser(expectedUser);
+        PayloadCollector.AddPayload(expectedUser);
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createUserResponse, 201);
+            Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.Created);
             Asserts.AssertContains(GetUserModels(), expectedUser);
             Asserts.AssertDoesNotContain(GetZipCodesModel(), expectedUser.ZipCode);
         });
@@ -51,14 +56,17 @@ public class Task30Tests : BaseApiTest
      */
 
     [Test]
+    [AllureName("Test Create New User - Required Fields Only Popolated")]
+    [AllureEpic("Task 30")]
     public void CreateUser_RequiredFieldsOnlyPopulated_Valid()
     {
         var expectedUser = UserModel.GenerateRandomUser();
         var createUserResponse = WriteApiActions.CreateUser(expectedUser);
+        PayloadCollector.AddPayload(expectedUser);
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createUserResponse, 201);
+            Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.Created);
             Asserts.AssertContains(GetUserModels(), expectedUser);
         });
     }
@@ -73,15 +81,18 @@ public class Task30Tests : BaseApiTest
     //And User is not added to application
 
     [Test]
+    [AllureName("Test Create New User - Unavailable ZIP Code")]
+    [AllureEpic("Task 30")]
     public void CreateUser_NotExistingZipCode_Invalid()
     {
         var expectedUser = UserModel.GenerateRandomUser(
             StringHelper.GetRandomNumericString(6), Random.Next(1, 124));
         var createUserResponse = WriteApiActions.CreateUser(expectedUser);
+        PayloadCollector.AddPayload(expectedUser);
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createUserResponse, 424);
+            Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.FailedDependency);
             Asserts.AssertDoesNotContain(GetUserModels(), expectedUser);
         });
     }
@@ -94,6 +105,9 @@ public class Task30Tests : BaseApiTest
     //And User is not added to application
 
     [Test]
+    [AllureName("Test Create New User - User with specified Name/Sex already exists")]
+    [AllureEpic("Task 30")]
+    [AllureIssue("The system creates duplicates for users")]
     public void CreateUser_UserAlreadyExists_Invalid()
     {
         #region Test pre-setup
@@ -104,10 +118,11 @@ public class Task30Tests : BaseApiTest
         #endregion
 
         var createUserResponse = WriteApiActions.CreateUser(expectedUser);
+        PayloadCollector.AddPayload(expectedUser);
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createUserResponse, 400);
+            Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.BadRequest);
             Asserts.AssertCount(1, GetUserModels(), expectedUser);
         });
 

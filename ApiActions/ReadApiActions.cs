@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using NUnit.Allure.Attributes;
+using RestSharp;
 
 namespace RestApiAutomationTraining.ApiActions;
 
@@ -15,6 +16,7 @@ public class ReadApiActions
     /// Get available zip codes
     /// </summary>
     /// <returns></returns>
+    [AllureStep("Getting zip codes from '/zip-codes'")]
     public RestResponse GetZipCodes()
     {
         const string uri = "/zip-codes";
@@ -23,6 +25,12 @@ public class ReadApiActions
         return _client.Execute(request);
     }
 
+    /// <summary>
+    /// Getting users
+    /// </summary>
+    /// <param name="parameters">key-value filters</param>
+    /// <returns></returns>
+    [AllureStep("Getting users from '/users'")]
     public RestResponse GetUsers(params (string, string)[] parameters)
     {
         const string uri = "/users";

@@ -1,10 +1,13 @@
-﻿using NUnit.Allure.Core;
+﻿using Allure.Net.Commons;
+using NUnit.Allure.Attributes;
+using NUnit.Allure.Core;
 using RestApiAutomationTraining.ApiActions;
 using RestApiAutomationTraining.ApiClient;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Logging;
 using RestApiAutomationTraining.Models;
 using RestSharp;
+using System.Text;
 
 namespace RestApiAutomationTraining.ApiTests;
 
@@ -13,6 +16,7 @@ namespace RestApiAutomationTraining.ApiTests;
 public abstract class BaseApiTest
 {
     public static TestContext TestContext;
+    protected PayloadCollector PayloadCollector { get; private set; }
     protected static Random Random { get; } = new();
     protected ReadApiActions ReadApiActions { get; private set; }
     protected WriteApiActions WriteApiActions { get; private set; }
@@ -28,8 +32,22 @@ public abstract class BaseApiTest
     protected virtual void TestSetup()
     {
         TestResults.SetLogger(TestContext.CurrentContext);
+        PayloadCollector = new PayloadCollector();
     }
 
+    [TearDown]
+    protected virtual void TestCleanup()
+    {
+        if (PayloadCollector.GetPayloads.Any())
+        {
+            var payloads = string.Join("\n", PayloadCollector.GetPayloads);
+
+            AllureApi.AddAttachment("payload.txt", "text/plain",
+                Encoding.UTF8.GetBytes(payloads));
+        }
+    }
+
+    [AllureStep("Creating {numberOfUsers} random users")]
     protected List<UserModel> CreateUsers(int numberOfUsers)
     {
         var newUsers = new List<UserModel>();
@@ -104,9 +122,11 @@ public abstract class BaseApiTest
             throw new Exception("Not all users cleared");
     }
 
+    [AllureStep("Getting list of user models")]
     protected List<UserModel> GetUserModels() =>
         ReadApiActions.GetUsers().ToModel<List<UserModel>>();
 
+    [AllureStep("Getting list of zip code models")]
     protected List<string> GetZipCodesModel()
     {
         var response = ReadApiActions.GetZipCodes();
@@ -115,7 +135,8 @@ public abstract class BaseApiTest
 
         return response.ToModel<List<string>>();
     }
-    
+
+    [AllureStep("Checking Response Status is Successful")]
     private static void CheckResponseIsSuccessful(RestResponse response)
     {
         if (TestResults.Log is null) throw new Exception(
@@ -123,9 +144,14 @@ public abstract class BaseApiTest
 
         if (!response.IsSuccessful)
         {
-            TestResults.Log.Error("Unexpected StatusCode {StatusCode} for endpoint: {Method} {Uri}",
-                response.StatusCode, response.Request.Method, response.ResponseUri);
+            TestResults.Log.Error("Unexpected StatusCode {StatusCode} ({Code}) for endpoint: {Method} {Uri}",
+                response.StatusCode, (int)response.StatusCode, response.Request.Method, response.ResponseUri
+                );
+
             Assert.Fail("For details check log file");
         }
+
+        TestResults.Log.Info("StatusCode {StatusCode} ({Code}) for endpoint: {Method} {Uri}",
+                response.StatusCode, (int)response.StatusCode, response.Request.Method, response.ResponseUri);
     }
 }

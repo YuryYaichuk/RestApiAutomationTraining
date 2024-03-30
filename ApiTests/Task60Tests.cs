@@ -1,4 +1,5 @@
-﻿using RestApiAutomationTraining.Helpers;
+﻿using NUnit.Allure.Attributes;
+using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
 using System.Net;
 
@@ -17,6 +18,8 @@ public class Task60Tests : BaseApiTest
      */
 
     [Test]
+    [AllureName("Test Delete User")]
+    [AllureEpic("Task 60")]
     public void DeleteUser_UserDeleted_Valid()
     {
         #region Test pre-setup
@@ -30,6 +33,7 @@ public class Task60Tests : BaseApiTest
         #endregion
 
         var deleteUserResponse = WriteApiActions.DeleteUser(expectedUser);
+        PayloadCollector.AddPayload(expectedUser);
 
         Assert.Multiple(() =>
         {
@@ -52,6 +56,9 @@ public class Task60Tests : BaseApiTest
     */
 
     [Test]
+    [AllureName("Test Delete User - Required Fields Only Specified")]
+    [AllureEpic("Task 60")]
+    [AllureIssue("Bug: User is not deleted when required fields only specified")]
     public void DeleteUser_UserDeletedIfRequiredFieldsOnlySpecified_Valid()
     {
         #region Test pre-setup
@@ -71,6 +78,7 @@ public class Task60Tests : BaseApiTest
         #endregion
 
         var deleteUserResponse = WriteApiActions.DeleteUser(userToDelete);
+        PayloadCollector.AddPayload(userToDelete);
 
         Assert.Multiple(() =>
         {
@@ -97,6 +105,8 @@ public class Task60Tests : BaseApiTest
      */
 
     [Test]
+    [AllureName("Test Delete User - Name is Not Specified")]
+    [AllureEpic("Task 60")]
     public void DeleteUser_RequiredFieldNameMissing_Invalid()
     {
         #region Test pre-setup
@@ -112,6 +122,7 @@ public class Task60Tests : BaseApiTest
         #endregion
 
         var deleteUserResponse = WriteApiActions.DeleteUser(userToDelete);
+        PayloadCollector.AddPayload(userToDelete);
         var deletedUser = GetUserModels()
             .Where(u => u.Name == expectedUser.Name && u.Sex == userToDelete.Sex)
             .ToList();
@@ -124,6 +135,8 @@ public class Task60Tests : BaseApiTest
     }
 
     [Test]
+    [AllureName("Test Delete User - Sex is Not Specified")]
+    [AllureEpic("Task 60")]
     public void DeleteUser_RequiredFieldSexMissing_Invalid()
     {
         #region Test pre-setup
@@ -139,6 +152,7 @@ public class Task60Tests : BaseApiTest
         #endregion
 
         var deleteUserResponse = WriteApiActions.DeleteUser(userToDelete);
+        PayloadCollector.AddPayload(userToDelete);
         var deletedUser = GetUserModels()
             .Where(u => u.Name == expectedUser.Name)
             .ToList();

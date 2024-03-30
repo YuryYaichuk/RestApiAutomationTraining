@@ -1,13 +1,17 @@
-﻿using RestApiAutomationTraining.ApiActions;
+﻿using NUnit.Allure.Attributes;
+using RestApiAutomationTraining.ApiActions;
 using RestApiAutomationTraining.Enums;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
+using System.Net;
 
 namespace RestApiAutomationTraining.ApiTests;
 
 [TestFixture]
 public class Task40Tests : BaseApiTest
 {
+    [AllureName("Test Get Users - Unfiltered")]
+    [AllureEpic("Task 40")]
     [Test]
     public void GetUsers_Valid()
     {
@@ -25,11 +29,13 @@ public class Task40Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 200);
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
             Assert.That(actualUserList, Has.Count.GreaterThanOrEqualTo(initialUsersCount + extraUserNumber));
         });
     }
 
+    [AllureName("Test Get Users - Filtered by 'olderThan'")]
+    [AllureEpic("Task 40")]
     [Test]
     public void GetUsers_FilteredByOlderThan_Valid()
     {
@@ -50,11 +56,13 @@ public class Task40Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 200);
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
     }
 
+    [AllureName("Test Get Users - Filtered by 'youngerThan'")]
+    [AllureEpic("Task 40")]
     [Test]
     public void GetUsers_FilteredByYongerThan_Valid()
     {
@@ -75,19 +83,13 @@ public class Task40Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 200);
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
-
-        /*
-             * Bug: Filtering by 'yongerThan' does not work
-             * 
-             * Error Message: 
-             * Expected: property Count equal to 18
-             * But was:  56
-             */
     }
 
+    [AllureName("Test Get Users - Filtered by 'sex'")]
+    [AllureEpic("Task 40")]
     [Test]
     public void GetUsers_FilteredBySex_Valid()
     {
@@ -107,7 +109,7 @@ public class Task40Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 200);
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
     }

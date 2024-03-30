@@ -6,26 +6,20 @@ namespace RestApiAutomationTraining.Helpers;
 
 public class Asserts
 {
-    public static void AssertStatusCode(RestResponse response, int expectedCode)
-    {
-        var actualStatusCode = (int)response.StatusCode;
-        var errorMessage = $"Wrong StatusCode for endpoint: [{response.Request.Method} {response.ResponseUri}]\n" +
-            $"Expected [{expectedCode}]\n" +
-            $"Actual   [{actualStatusCode}]";
-
-        if (actualStatusCode != expectedCode)
-        {
-            TestResults.Log.Error(errorMessage);
-            Assert.Fail(errorMessage);
-        }
-        //Assert.That(actualStatusCode, Is.EqualTo(expectedCode), errorMessage);
-    }
-
     public static void AssertStatusCode(RestResponse response, HttpStatusCode expectedCode)
     {
         var actualStatusCode = response.StatusCode;
-        Assert.That(actualStatusCode, Is.EqualTo(expectedCode),
-            $"Wrong StatusCode for endpoint: [{response.Request.Method} {response.ResponseUri}]");
+        
+        if (actualStatusCode != expectedCode)
+        {
+            var errorMessage = 
+                $"Wrong StatusCode for endpoint: [{response.Request.Method} {response.ResponseUri}]\n" +
+                $"Expected [{expectedCode}]\n" +
+                $"Actual   [{actualStatusCode}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
+        }
     }
 
     public static void AssertContainsAll(IEnumerable<string> containingCollection, IEnumerable<string> containedCollection)
@@ -34,9 +28,13 @@ public class Asserts
 
         if (notFoundItems.Any())
         {
-            Assert.Fail($"Expected items [{string.Join("|", notFoundItems)}]\n" +
+            var errorMessage =
+                $"Expected items [{string.Join("|", notFoundItems)}]\n" +
                 $"were not found in\n" +
-                $"[{string.Join("|", containingCollection)}]");
+                $"[{string.Join("|", containingCollection)}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
         }
     }
 
@@ -44,9 +42,13 @@ public class Asserts
     {
         if (!containingCollection.Any(item => item.Equals(containedObject)))
         {
-            Assert.Fail($"Expected item [{containedObject}]\n" +
+            var errorMessage =
+                $"Expected item [{containedObject}]\n" +
                 $"was NOT found in\n" +
-                $"[{string.Join("\n", containingCollection)}]");
+                $"[{string.Join("\n", containingCollection)}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
         }
     }
 
@@ -54,9 +56,13 @@ public class Asserts
     {
         if (containingCollection.Any(item => item.Equals(containedText)))
         {
-            Assert.Fail($"Unexpected item [{containedText}]\n" +
+            var errorMessage =
+                $"Unexpected item [{containedText}]\n" +
                 $"was found in\n" +
-                $"[{string.Join("|", containingCollection)}]");
+                $"[{string.Join("|", containingCollection)}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
         }
     }
 
@@ -64,8 +70,12 @@ public class Asserts
     {
         if (expectedCount != actualCount)
         {
-            Assert.Fail($"Expected count [{expectedCount}]\n" +
-                        $"Actual count   [{actualCount}]");
+            var errorMessage =
+                $"Expected count [{expectedCount}]\n" +
+                $"Actual count   [{actualCount}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
         }
     }
 
@@ -74,8 +84,12 @@ public class Asserts
         var actualCount = collection.Count(item => item.Equals(objectToCount));
         if (expectedCount != actualCount)
         {
-            Assert.Fail($"Expected count [{expectedCount}] for [{objectToCount}]\n" +
-                        $"Actual count   [{actualCount}]");
+            var errorMessage =
+                $"Expected count [{expectedCount}] for [{objectToCount}]\n" +
+                $"Actual count   [{actualCount}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
         }
     }
 
@@ -83,8 +97,12 @@ public class Asserts
     {
         if (expected != actual.Content)
         {
-            Assert.Fail($"Expected [{expected}]\n" +
-                        $"Actual   [{actual.Content}]");
+            var errorMessage =
+                $"Expected [{expected}]\n" +
+                $"Actual   [{actual.Content}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
         }
     }
 
@@ -92,8 +110,12 @@ public class Asserts
     {
         if (expected.Content != actual.Content)
         {
-            Assert.Fail($"Expected [{expected}]\n" +
-                        $"Actual   [{actual.Content}]");
+            var errorMessage =
+                $"Expected [{expected.Content}]\n" +
+                $"Actual   [{actual.Content}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
         }
     }
 
@@ -101,8 +123,12 @@ public class Asserts
     {
         if (!(actual.Content ?? string.Empty).Contains(expected))
         {
-            Assert.Fail($"Expected [{expected}]\n" +
-                        $"Actual   [{actual}]");
+            var errorMessage =
+                $"Expected [{expected}]\n" +
+                $"Actual   [{actual.Content}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
         }
     }
 }
