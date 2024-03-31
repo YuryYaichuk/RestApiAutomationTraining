@@ -1,0 +1,1 @@
+"[{\"name\":\"Gaekilupu\",\"age\":54,\"sex\":\"FEMALE\",\"zipCode\":\"164870\"},{\"name\":\"Qiciluwe\",\"age\":111,\"sex\":\"MALE\",\"zipCode\":\"855825\"}]"
