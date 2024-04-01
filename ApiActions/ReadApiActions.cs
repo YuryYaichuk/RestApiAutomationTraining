@@ -23,6 +23,11 @@ public class ReadApiActions
         return _client.Execute(request);
     }
 
+    /// <summary>
+    /// Getting users
+    /// </summary>
+    /// <param name="parameters">key-value filters</param>
+    /// <returns></returns>
     public RestResponse GetUsers(params (string, string)[] parameters)
     {
         const string uri = "/users";

@@ -2,6 +2,7 @@
 using RestApiAutomationTraining.Enums;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
+using System.Net;
 
 namespace RestApiAutomationTraining.ApiTests;
 
@@ -25,7 +26,7 @@ public class Task40Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 200);
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
             Assert.That(actualUserList, Has.Count.GreaterThanOrEqualTo(initialUsersCount + extraUserNumber));
         });
     }
@@ -50,13 +51,13 @@ public class Task40Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 200);
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
     }
 
     [Test]
-    public void GetUsers_FilteredByYongerThan_Valid()
+    public void GetUsers_FilteredByYoungerThan_Valid()
     {
         const int ageLimit = 60;
         const string paramName = "youngerThan";
@@ -75,17 +76,9 @@ public class Task40Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 200);
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
-
-        /*
-             * Bug: Filtering by 'yongerThan' does not work
-             * 
-             * Error Message: 
-             * Expected: property Count equal to 18
-             * But was:  56
-             */
     }
 
     [Test]
@@ -107,7 +100,7 @@ public class Task40Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 200);
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
             Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
         });
     }
