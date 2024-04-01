@@ -12,7 +12,7 @@ public class Asserts
         
         if (actualStatusCode != expectedCode)
         {
-            var errorMessage = 
+            var errorMessage =
                 $"Wrong StatusCode for endpoint: [{response.Request.Method} {response.ResponseUri}]\n" +
                 $"Expected [{expectedCode}]\n" +
                 $"Actual   [{actualStatusCode}]";

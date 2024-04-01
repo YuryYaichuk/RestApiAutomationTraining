@@ -147,7 +147,6 @@ public class Task70Tests : BaseApiTest
         var uploadUsersResponse = WriteApiActions.UploadUsers(fileName);
         var getUsersResponseAfter = ReadApiActions.GetUsers();
 
-
         Assert.Multiple(() =>
         {
             Asserts.AssertStatusCode(uploadUsersResponse, HttpStatusCode.Conflict);
