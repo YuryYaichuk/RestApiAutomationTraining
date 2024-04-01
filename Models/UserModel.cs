@@ -9,7 +9,9 @@ public record UserModel(string? Name, int? Age, string? Sex, string? ZipCode = n
     {
         var random = new Random();
         var enumValues = Enum.GetValues(typeof(SexEnum));
-        var sex = (SexEnum)enumValues.GetValue(random.Next(0, enumValues.Length));
+        var sex = (SexEnum)
+            (enumValues.GetValue(random.Next(0, enumValues.Length))
+            ?? throw new Exception("Unable to get enum value"));
 
         return new(StringHelper.GenerateName(7), age, sex.ToString(), zipCode);
     }
@@ -25,7 +27,7 @@ public class UpdateUserDto
     public UserModel UserToChange { get; }
 
     public UpdateUserDto(UserModel newUser, UserModel userToUpdate)
-    { 
+    {
         UserNewValues = newUser;
         UserToChange = userToUpdate;
     }

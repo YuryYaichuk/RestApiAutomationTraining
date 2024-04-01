@@ -20,7 +20,7 @@ public class JsonHelper
             Converters = { new JsonStringEnumConverter() }
         };
 
-        T model;
+        T? model;
 
         try
         {
@@ -32,7 +32,7 @@ public class JsonHelper
                 $"String to deserialize: {valueToDeserialize}\nOriginal error: {ex.Message}");
         }
 
-        return model;
+        return model ?? throw new Exception("Model is null");
     }
 
     public static string SerializeCamelCase(object obj)
