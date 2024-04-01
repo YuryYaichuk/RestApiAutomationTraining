@@ -26,6 +26,11 @@ public class WriteApiActions
         return _client.Execute(request);
     }
 
+    /// <summary>
+    /// Creates a new user
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
     public RestResponse CreateUser(UserModel user)
     {
         const string uri = "/users";

@@ -1,6 +1,7 @@
 using RestApiAutomationTraining.ApiActions;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
+using System.Net;
 
 namespace RestApiAutomationTraining.ApiTests;
 
@@ -33,7 +34,7 @@ public class Task20Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(getZipCodesResponse, 200);
+            Asserts.AssertStatusCode(getZipCodesResponse, HttpStatusCode.OK);
             Asserts.AssertContainsAll(zipCodes, expectedZipCodeList);
         });
 
@@ -71,7 +72,7 @@ public class Task20Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(response, 201);
+            Asserts.AssertStatusCode(response, HttpStatusCode.Created);
             Asserts.AssertContainsAll(actualZipCodes, expectedZipCodeList);
         });
     }
@@ -99,7 +100,7 @@ public class Task20Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createZipCodesResponse, 201);
+            Asserts.AssertStatusCode(createZipCodesResponse, HttpStatusCode.Created);
             Asserts.AssertCount(1, GetZipCodesModel(), duplicatedZipCode);
         });
 
@@ -146,7 +147,7 @@ public class Task20Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createZipCodeResponse, 201);
+            Asserts.AssertStatusCode(createZipCodeResponse, HttpStatusCode.Created);
             Asserts.AssertCount(0, GetZipCodesModel(), usedZipCode);
         });
 

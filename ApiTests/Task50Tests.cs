@@ -92,7 +92,7 @@ public class Task50Tests : BaseApiTest
         {
             Asserts.AssertStatusCode(updateUserResponse, HttpStatusCode.FailedDependency);
             Assert.That(GetUserModels(), Does.Contain(userToModify), $"Original user was not found: [{userToModify}]");
-            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser), 
+            Assert.That(GetUserModels(), Does.Not.Contain(modifiedUser),
                 $"User was updated: [{userToModify}] replaced with [{modifiedUser}]");
         });
         

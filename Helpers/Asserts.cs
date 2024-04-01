@@ -1,31 +1,23 @@
-﻿using RestApiAutomationTraining.Logging;
-using RestSharp;
+﻿using RestSharp;
 using System.Net;
 
 namespace RestApiAutomationTraining.Helpers;
 
 public class Asserts
 {
-    public static void AssertStatusCode(RestResponse response, int expectedCode)
-    {
-        var actualStatusCode = (int)response.StatusCode;
-        var errorMessage = $"Wrong StatusCode for endpoint: [{response.Request.Method} {response.ResponseUri}]\n" +
-            $"Expected [{expectedCode}]\n" +
-            $"Actual   [{actualStatusCode}]";
-
-        if (actualStatusCode != expectedCode)
-        {
-            TestResults.Log.Error(errorMessage);
-            Assert.Fail(errorMessage);
-        }
-        //Assert.That(actualStatusCode, Is.EqualTo(expectedCode), errorMessage);
-    }
-
     public static void AssertStatusCode(RestResponse response, HttpStatusCode expectedCode)
     {
         var actualStatusCode = response.StatusCode;
-        Assert.That(actualStatusCode, Is.EqualTo(expectedCode),
-            $"Wrong StatusCode for endpoint: [{response.Request.Method} {response.ResponseUri}]");
+
+        if (actualStatusCode != expectedCode)
+        {
+            var errorMessage =
+                $"Wrong StatusCode for endpoint: [{response.Request.Method} {response.ResponseUri}]\n" +
+                $"Expected [{expectedCode}]\n" +
+                $"Actual   [{actualStatusCode}]";
+
+            Assert.Fail(errorMessage);
+        }
     }
 
     public static void AssertContainsAll(IEnumerable<string> containingCollection, IEnumerable<string> containedCollection)
