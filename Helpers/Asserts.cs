@@ -78,4 +78,31 @@ public class Asserts
                         $"Actual count   [{actualCount}]");
         }
     }
+
+    public static void AreEqual(string expected, RestResponse actual)
+    {
+        if (expected != actual.Content)
+        {
+            Assert.Fail($"Expected [{expected}]\n" +
+                        $"Actual   [{actual.Content}]");
+        }
+    }
+
+    public static void AreEqual(RestResponse expected, RestResponse actual)
+    {
+        if (expected.Content != actual.Content)
+        {
+            Assert.Fail($"Expected [{expected}]\n" +
+                        $"Actual   [{actual.Content}]");
+        }
+    }
+
+    public static void ResponseContainsText(string expected, RestResponse actual)
+    {
+        if (!(actual.Content ?? string.Empty).Contains(expected))
+        {
+            Assert.Fail($"Expected [{expected}]\n" +
+                        $"Actual   [{actual}]");
+        }
+    }
 }
