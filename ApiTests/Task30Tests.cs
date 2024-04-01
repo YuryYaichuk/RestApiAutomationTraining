@@ -2,6 +2,7 @@
 using RestApiAutomationTraining.ApiActions;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
+using System.Net;
 
 namespace RestApiAutomationTraining.ApiTests;
 
@@ -34,7 +35,7 @@ public class Task30Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createUserResponse, 201);
+            Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.Created);
             Asserts.AssertContains(GetUserModels(), expectedUser);
             Asserts.AssertDoesNotContain(GetZipCodesModel(), expectedUser.ZipCode);
         });
@@ -58,7 +59,7 @@ public class Task30Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createUserResponse, 201);
+            Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.Created);
             Asserts.AssertContains(GetUserModels(), expectedUser);
         });
     }
@@ -81,7 +82,7 @@ public class Task30Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createUserResponse, 424);
+            Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.FailedDependency);
             Asserts.AssertDoesNotContain(GetUserModels(), expectedUser);
         });
     }
@@ -107,7 +108,7 @@ public class Task30Tests : BaseApiTest
 
         Assert.Multiple(() =>
         {
-            Asserts.AssertStatusCode(createUserResponse, 400);
+            Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.BadRequest);
             Asserts.AssertCount(1, GetUserModels(), expectedUser);
         });
 

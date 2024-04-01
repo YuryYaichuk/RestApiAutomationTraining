@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using RestSharp;
 using System.Text.Json;
-using RestSharp;
+using System.Text.Json.Serialization;
 
 namespace RestApiAutomationTraining.Helpers;
 
@@ -18,7 +18,7 @@ public class JsonHelper
             Converters = { new JsonStringEnumConverter() }
         };
 
-        T model;
+        T? model;
 
         try
         {
@@ -30,6 +30,6 @@ public class JsonHelper
                 $"String to deserialize: {valueToDeserialize}\nOriginal error: {ex.Message}");
         }
 
-        return model;
+        return model ?? throw new Exception("Model is null");
     }
 }
