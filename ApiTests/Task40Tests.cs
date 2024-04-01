@@ -64,7 +64,7 @@ public class Task40Tests : BaseApiTest
     [AllureName("Test Get Users - Filtered by 'youngerThan'")]
     [AllureEpic("Task 40")]
     [Test]
-    public void GetUsers_FilteredByYongerThan_Valid()
+    public void GetUsers_FilteredByYoungerThan_Valid()
     {
         const int ageLimit = 60;
         const string paramName = "youngerThan";

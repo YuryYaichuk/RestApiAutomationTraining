@@ -1,5 +1,4 @@
-﻿using RestApiAutomationTraining.Logging;
-using RestSharp;
+﻿using RestSharp;
 using System.Net;
 
 namespace RestApiAutomationTraining.Helpers;
@@ -129,6 +128,33 @@ public class Asserts
 
             TestResults.Log.Error(errorMessage);
             Assert.Fail(errorMessage);
+        }
+    }
+
+    public static void AreEqual(string expected, RestResponse actual)
+    {
+        if (expected != actual.Content)
+        {
+            Assert.Fail($"Expected [{expected}]\n" +
+                        $"Actual   [{actual.Content}]");
+        }
+    }
+
+    public static void AreEqual(RestResponse expected, RestResponse actual)
+    {
+        if (expected.Content != actual.Content)
+        {
+            Assert.Fail($"Expected [{expected}]\n" +
+                        $"Actual   [{actual.Content}]");
+        }
+    }
+
+    public static void ResponseContainsText(string expected, RestResponse actual)
+    {
+        if (!(actual.Content ?? string.Empty).Contains(expected))
+        {
+            Assert.Fail($"Expected [{expected}]\n" +
+                        $"Actual   [{actual}]");
         }
     }
 }
