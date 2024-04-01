@@ -19,9 +19,8 @@ public class ReadApiActions
     {
         const string uri = "/zip-codes";
         var request = new RestRequest(uri);
-        var response = _client.Execute(request);
 
-        return response;
+        return _client.Execute(request);
     }
 
     public RestResponse GetUsers(params (string, string)[] parameters)
@@ -36,8 +35,7 @@ public class ReadApiActions
                 request.AddQueryParameter(pair.Item1, pair.Item2);
             }
         }
-        var response = _client.Execute(request);
 
-        return response;
+        return _client.Execute(request);
     }
 }
