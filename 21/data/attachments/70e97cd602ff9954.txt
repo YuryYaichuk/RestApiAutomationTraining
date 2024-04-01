@@ -1,0 +1,1 @@
+{"name":"Vaegoruku","age":76,"sex":"MALE","zipCode":"885554"}

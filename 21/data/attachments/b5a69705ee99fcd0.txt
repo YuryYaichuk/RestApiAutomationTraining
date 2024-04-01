@@ -1,0 +1,1 @@
+2024-04-01 12:56:53.5437|INFO|RestApiAutomationTraining.Logging.TestResults|StatusCode OK (200) for endpoint: Get http://localhost:49000/zip-codes
