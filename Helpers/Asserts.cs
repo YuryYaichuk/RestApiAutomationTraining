@@ -79,7 +79,7 @@ public class Asserts
         }
     }
 
-    public static void AreEqual(string expected,  RestResponse actual)
+    public static void AreEqual(string expected, RestResponse actual)
     {
         if (expected != actual.Content)
         {
