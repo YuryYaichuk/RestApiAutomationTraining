@@ -1,0 +1,1 @@
+{"userNewValues":{"name":"Kyvabape","age":110,"sex":"FEMALE","zipCode":"860709"},"userToChange":{"name":"Rozhylizha","age":113,"sex":"MALE","zipCode":"905443"}}
