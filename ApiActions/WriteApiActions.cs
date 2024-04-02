@@ -81,4 +81,19 @@ public class WriteApiActions
 
         return _client.Execute(request);
     }
+
+    /// <summary>
+    /// Uploads JSON file with array of users
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
+    public RestResponse UploadUsers(string filePath)
+    {
+        const string uri = "/users/upload";
+
+        var request = new RestRequest(uri, Method.Post);
+        request.AddFile("file", filePath);
+
+        return _client.Execute(request);
+    }
 }
