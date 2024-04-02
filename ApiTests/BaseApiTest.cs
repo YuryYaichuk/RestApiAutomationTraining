@@ -72,6 +72,31 @@ public abstract class BaseApiTest
         return newUsers;
     }
 
+    [AllureStep("Creating {numberOfUsers} random users")]
+    protected static async Task<List<UserModel>> CreateUsersAsync(int numberOfUsers)
+    {
+        var newUsers = new List<UserModel>();
+        var zipCodes = new List<string>();
+
+        for (var i = 0; i < numberOfUsers; i++)
+        {
+            zipCodes.Add(StringHelper.GetRandomNumericString(6));
+        }
+
+        await AddNewZipCodesAsync(zipCodes.ToArray());
+
+        zipCodes.ForEach(async zip =>
+        {
+            var randomUser = UserModel.GenerateRandomUser(zip, Random.Next(1, 124));
+            await AddNewUserAsync(randomUser);
+            newUsers.Add(randomUser);
+
+            Thread.Sleep(1000);
+        });
+
+        return newUsers;
+    }
+
     protected void AddNewZipCodes(params string[] zipCodes)
     {
         var response = WriteApiActions.CreateZipCodes(zipCodes);
@@ -79,9 +104,23 @@ public abstract class BaseApiTest
         CheckResponseIsSuccessful(response);
     }
 
+    protected static async Task AddNewZipCodesAsync(params string[] zipCodes)
+    {
+        var response = await HttpApiActions.CreateZipCodesAsync(zipCodes);
+
+        CheckResponseIsSuccessful(response);
+    }
+
     protected void AddNewUser(UserModel user)
     {
         var response = WriteApiActions.CreateUser(user);
+
+        CheckResponseIsSuccessful(response);
+    }
+
+    protected static async Task AddNewUserAsync(UserModel user)
+    {
+        var response = await HttpApiActions.CreateUserAsync(user);
 
         CheckResponseIsSuccessful(response);
     }
@@ -153,5 +192,23 @@ public abstract class BaseApiTest
 
         TestResults.Log.Info("StatusCode {StatusCode} ({Code}) for endpoint: {Method} {Uri}",
                 response.StatusCode, (int)response.StatusCode, response.Request.Method, response.ResponseUri);
+    }
+
+    [AllureStep("Checking Response Status is Successful")]
+    private static void CheckResponseIsSuccessful(HttpResponseMessage response)
+    {
+        if (TestResults.Log is null) throw new Exception(
+            "Logger was not initialized, make sure CustomLogger.SetLogger() is used in test pre-setup");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            TestResults.Log.Error("Unexpected StatusCode {StatusCode} ({Code}) for endpoint: {Method} {Uri}",
+                response.StatusCode, (int)response.StatusCode, response.RequestMessage.Method, response.RequestMessage.RequestUri);
+
+            Assert.Fail("For details check log file");
+        }
+
+        TestResults.Log.Info("StatusCode {StatusCode} ({Code}) for endpoint: {Method} {Uri}",
+                response.StatusCode, (int)response.StatusCode, response.RequestMessage.Method, response.RequestMessage.RequestUri);
     }
 }

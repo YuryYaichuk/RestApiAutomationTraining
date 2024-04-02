@@ -22,7 +22,7 @@ public class TestResults
     [ThreadStatic]
     public static DirectoryInfo CurrentTestDirectory;
 
-    [ThreadStatic]
+    //[ThreadStatic]
     private static Logger? _logger;
 
     /// <summary>

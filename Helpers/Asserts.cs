@@ -22,6 +22,22 @@ public class Asserts
         }
     }
 
+    public static void AssertStatusCode(HttpResponseMessage response, HttpStatusCode expectedCode)
+    {
+        var actualStatusCode = response.StatusCode;
+
+        if (actualStatusCode != expectedCode)
+        {
+            var errorMessage =
+                $"Wrong StatusCode for endpoint: [{response.RequestMessage.Method} {response.RequestMessage.RequestUri}]\n" +
+                $"Expected [{expectedCode}]\n" +
+                $"Actual   [{actualStatusCode}]";
+
+            TestResults.Log.Error(errorMessage);
+            Assert.Fail(errorMessage);
+        }
+    }
+
     public static void AssertContainsAll(IEnumerable<string> containingCollection, IEnumerable<string> containedCollection)
     {
         var notFoundItems = containedCollection.ToList().Where(item => !containingCollection.Contains(item));
