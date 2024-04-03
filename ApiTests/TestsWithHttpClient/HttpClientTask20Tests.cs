@@ -34,12 +34,12 @@ public class HttpClientTask20Tests : BaseApiTest
         #endregion
 
         var getZipCodesResponse = await HttpApiActions.GetZipCodesAsync();
-        var zipCodes = getZipCodesResponse.ToModel<List<string>>();
 
-        Assert.Multiple(() =>
+        Assert.Multiple(async () =>
         {
             Asserts.AssertStatusCode(getZipCodesResponse, HttpStatusCode.OK);
-            Asserts.AssertContainsAll(zipCodes, expectedZipCodeList);
+            Asserts.AssertContainsAll(
+                await getZipCodesResponse.ToModelAsync<List<string>>(), expectedZipCodeList);
         });
 
         /*
@@ -78,11 +78,10 @@ public class HttpClientTask20Tests : BaseApiTest
 
         PayloadCollector.AddPayload(expectedZipCodeList);
 
-        Assert.Multiple(() =>
+        Assert.Multiple(async () =>
         {
             Asserts.AssertStatusCode(response, HttpStatusCode.Created);
-            Asserts.AssertContainsAll(
-                HttpApiActions.GetZipCodesAsync().Result.ToModel<List<string>>(), expectedZipCodeList);
+            Asserts.AssertContainsAll(await response.ToModelAsync<List<string>>(), expectedZipCodeList);
         });
     }
 
@@ -112,11 +111,11 @@ public class HttpClientTask20Tests : BaseApiTest
 
         PayloadCollector.AddPayload(duplicatedZipCode);
 
-        Assert.Multiple(() =>
+        Assert.Multiple(async () =>
         {
             Asserts.AssertStatusCode(createZipCodesResponse, HttpStatusCode.Created);
             Asserts.AssertCount(1,
-                HttpApiActions.GetZipCodesAsync().Result.ToModel<List<string>>(), duplicatedZipCode);
+                await createZipCodesResponse.ToModelAsync<List<string>>(), duplicatedZipCode);
         });
 
         /*
@@ -165,11 +164,11 @@ public class HttpClientTask20Tests : BaseApiTest
 
         PayloadCollector.AddPayload(usedZipCode);
 
-        Assert.Multiple(() =>
+        Assert.Multiple(async () =>
         {
             Asserts.AssertStatusCode(createZipCodeResponse, HttpStatusCode.Created);
             Asserts.AssertCount(0,
-                HttpApiActions.GetZipCodesAsync().Result.ToModel<List<string>>(), usedZipCode);
+                await createZipCodeResponse.ToModelAsync<List<string>>(), usedZipCode);
         });
 
         /*

@@ -1,11 +1,13 @@
 ﻿//using NUnit.Allure.Attributes;
+//using RestApiAutomationTraining.ApiActions;
 //using RestApiAutomationTraining.Helpers;
 //using RestApiAutomationTraining.Models;
 //using System.Net;
 
-//namespace RestApiAutomationTraining.ApiTests;
+//namespace RestApiAutomationTraining.ApiTests.TestsWithHttpClient;
 
-//public class Task60Tests : BaseApiTest
+//[TestFixture]
+//public class HttpClientTask60Tests : BaseApiTest
 //{
 //    /* 
 //     * Scenario #1
@@ -20,15 +22,15 @@
 //    [Test]
 //    [AllureName("Test Delete User")]
 //    [AllureEpic("Task 60")]
-//    public void DeleteUser_UserDeleted_Valid()
+//    public async Task DeleteUserAsync_UserDeleted_Valid()
 //    {
 //        #region Test pre-setup
 
 //        var expectedZipCode = StringHelper.GetRandomNumericString(6);
-//        AddNewZipCodes(expectedZipCode);
+//        await AddNewZipCodesAsync(expectedZipCode);
 
 //        var expectedUser = UserModel.GenerateRandomUser(expectedZipCode, Random.Next(1, 124));
-//        AddNewUser(expectedUser);
+//        await AddNewUserAsync(expectedUser);
 
 //        #endregion
 
@@ -59,15 +61,15 @@
 //    [AllureName("Test Delete User - Required Fields Only Specified")]
 //    [AllureEpic("Task 60")]
 //    [AllureIssue("Bug: User is not deleted when required fields only specified")]
-//    public void DeleteUser_UserDeletedIfRequiredFieldsOnlySpecified_Valid()
+//    public async Task DeleteUserAsync_UserDeletedIfRequiredFieldsOnlySpecified_Valid()
 //    {
 //        #region Test pre-setup
 
 //        var expectedZipCode = StringHelper.GetRandomNumericString(6);
-//        AddNewZipCodes(expectedZipCode);
+//        await AddNewZipCodesAsync(expectedZipCode);
 
 //        var expectedUser = UserModel.GenerateRandomUser(expectedZipCode, Random.Next(1, 124));
-//        AddNewUser(expectedUser);
+//        await AddNewUserAsync(expectedUser);
 
 //        var userToDelete = expectedUser with
 //        {
@@ -107,15 +109,15 @@
 //    [Test]
 //    [AllureName("Test Delete User - Name is Not Specified")]
 //    [AllureEpic("Task 60")]
-//    public void DeleteUser_RequiredFieldNameMissing_Invalid()
+//    public async Task DeleteUserAsync_RequiredFieldNameMissing_Invalid()
 //    {
 //        #region Test pre-setup
 
 //        var expectedZipCode = StringHelper.GetRandomNumericString(6);
-//        AddNewZipCodes(expectedZipCode);
+//        await AddNewZipCodesAsync(expectedZipCode);
 
 //        var expectedUser = UserModel.GenerateRandomUser(expectedZipCode, Random.Next(1, 124));
-//        AddNewUser(expectedUser);
+//        await AddNewUserAsync(expectedUser);
 
 //        var userToDelete = expectedUser with { Name = null };
 
@@ -137,15 +139,15 @@
 //    [Test]
 //    [AllureName("Test Delete User - Sex is Not Specified")]
 //    [AllureEpic("Task 60")]
-//    public void DeleteUser_RequiredFieldSexMissing_Invalid()
+//    public async Task DeleteUserAsync_RequiredFieldSexMissing_Invalid()
 //    {
 //        #region Test pre-setup
 
 //        var expectedZipCode = StringHelper.GetRandomNumericString(6);
-//        AddNewZipCodes(expectedZipCode);
+//        await AddNewZipCodesAsync(expectedZipCode);
 
 //        var expectedUser = UserModel.GenerateRandomUser(expectedZipCode, Random.Next(1, 124));
-//        AddNewUser(expectedUser);
+//        await AddNewUserAsync(expectedUser);
 
 //        var userToDelete = GetUserModels().First() with { Sex = null };
 

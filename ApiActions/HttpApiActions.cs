@@ -2,6 +2,7 @@
 using RestApiAutomationTraining.ApiClient;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
+using RestSharp;
 using System.Text.Json;
 
 namespace RestApiAutomationTraining.ApiActions;
@@ -31,9 +32,15 @@ public class HttpApiActions
         const string uri = "/users";
         var filters = string.Empty;
 
-        if (parameters != null)
+        if (parameters.Length > 0)
         {
-            filters = "?" + string.Join("&", parameters);
+            var parameterString = string.Empty;
+
+            foreach (var parameter in parameters)
+            {
+                parameterString = string.Join("&", $"{parameter.Item1}={parameter.Item2}");
+            }
+            filters = "?" + parameterString;
         }
 
         return await HttpClientForRead.GetClient.GetAsync(uri + filters);
@@ -68,4 +75,49 @@ public class HttpApiActions
 
         return await HttpClientForWrite.GetClient.PostAsync(uri, payload);
     }
+
+    /// <summary>
+    /// Updates an existing user by using PATCH request method
+    /// </summary>
+    /// <param name="user">UpdateUserDto model</param>
+    /// <returns></returns>
+    [AllureStep("Updating user with PATCH '/users'")]
+    public static async Task<HttpResponseMessage> UpdateUserUsingPatchAsync(UpdateUserDto user)
+    {
+        const string uri = "/users";
+        var payload =
+            new StringContent(JsonHelper.SerializeCamelCase(user), System.Text.Encoding.UTF8, "application/json");
+
+        return await HttpClientForWrite.GetClient.PatchAsync(uri, payload);
+    }
+
+    /// <summary>
+    /// Updates an existing user by using PUT request method
+    /// </summary>
+    /// <param name="user">UpdateUserDto model</param>
+    /// <returns></returns>
+    [AllureStep("Updating user with PATCH '/users'")]
+    public static async Task<HttpResponseMessage> UpdateUserUsingPutAsync(UpdateUserDto user)
+    {
+        const string uri = "/users";
+        var payload =
+            new StringContent(JsonHelper.SerializeCamelCase(user), System.Text.Encoding.UTF8, "application/json");
+
+        return await HttpClientForWrite.GetClient.PutAsync(uri, payload);
+    }
+
+    /// <summary>
+    /// Deletes a specified user
+    /// </summary>
+    /// <param name="user">user model</param>
+    /// <returns></returns>
+    //[AllureStep("Deleting user with DELETE '/users'")]
+    //public static async Task<HttpResponseMessage> DeleteUserAsync(UserModel user)
+    //{
+    //    const string uri = "/users";
+    //    var payload =
+    //        new StringContent(JsonHelper.SerializeCamelCase(user), System.Text.Encoding.UTF8, "application/json");
+
+    //    return await HttpClientForWrite.GetClient.DeleteAsync(uri, payload);
+    //}
 }

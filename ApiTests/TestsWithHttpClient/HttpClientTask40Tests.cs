@@ -1,124 +1,141 @@
-﻿//using NUnit.Allure.Attributes;
-//using RestApiAutomationTraining.ApiActions;
-//using RestApiAutomationTraining.Enums;
-//using RestApiAutomationTraining.Helpers;
-//using RestApiAutomationTraining.Models;
-//using System.Net;
+﻿using NUnit.Allure.Attributes;
+using RestApiAutomationTraining.ApiActions;
+using RestApiAutomationTraining.Enums;
+using RestApiAutomationTraining.Helpers;
+using RestApiAutomationTraining.Models;
+using System.Net;
 
-//namespace RestApiAutomationTraining.ApiTests.TestsWithHttpClient;
+namespace RestApiAutomationTraining.ApiTests.TestsWithHttpClient;
 
-//[TestFixture]
-//public class HttpClientTask40Tests : BaseApiTest
-//{
-//    //Scenario #1
-//    //Given I am authorizated user
-//    //When I send GET request to /users endpoint
-//    //Then I get 200 respone code
-//    //And I get all users stored in the application for now
+[TestFixture]
+public class HttpClientTask40Tests : BaseApiTest
+{
+    //Scenario #1
+    //Given I am authorizated user
+    //When I send GET request to /users endpoint
+    //Then I get 200 respone code
+    //And I get all users stored in the application for now
 
-//    [AllureName("Test Get Users - Unfiltered")]
-//    [AllureEpic("Task 40")]
-//    [Test]
-//    public async Task GetUsersAsync_Valid()
-//    {
-//        #region Test pre-setup
+    [AllureName("Test Get Users - Unfiltered")]
+    [AllureEpic("Task 40")]
+    [Test]
+    public async Task GetUsersAsync_Valid()
+    {
+        #region Test pre-setup
 
-//        const int extraUserNumber = 3;
-//        var initialUsersCount = GetUserModels().Count;
-//        var getUsersResponse = HttpApiActions.GetUsersAsync();
-//        var count = getUsersResponse.Result.ToModel<List<UserModel>>().Count;
+        const int extraUserNumber = 3;
+        var initialUsers = await GetUserModelsAsync();
 
-//        await CreateUsersAsync(extraUserNumber);
+        await CreateUsersAsync(extraUserNumber);
 
-//        #endregion
+        #endregion
 
-//        var response = await HttpApiActions.GetUsersAsync();
-//        var actualUserList = response.ToModel<List<UserModel>>();
+        var response = await HttpApiActions.GetUsersAsync();
 
-//        Assert.Multiple(() =>
-//        {
-//            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
-//            Assert.That(actualUserList, Has.Count.GreaterThanOrEqualTo(initialUsersCount + extraUserNumber));
-//        });
-//    }
+        Assert.Multiple(async () =>
+        {
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
+            Assert.That(await response.ToModelAsync<List<UserModel>>(),
+                Has.Count.GreaterThanOrEqualTo(initialUsers.Count + extraUserNumber));
+        });
+    }
 
-//    [AllureName("Test Get Users - Filtered by 'olderThan'")]
-//    [AllureEpic("Task 40")]
-//    [Test]
-//    public async Task GetUsersAsync_FilteredByOlderThan_Valid()
-//    {
-//        const int ageLimit = 12;
-//        const string paramName = "olderThan";
+    //Scenario #2
+    //Given I am authorizated user
+    //When I send GET request to /users endpoint
+    //And I add olderThan parameter
+    //Then I get 200 respone code
+    //And I get all users older than value of parameter
 
-//        #region Test pre-setup
+    [AllureName("Test Get Users - Filtered by 'olderThan'")]
+    [AllureEpic("Task 40")]
+    [Test]
+    public async Task GetUsersAsync_FilteredByOlderThan_Valid()
+    {
+        const int ageLimit = 12;
+        const string paramName = "olderThan";
 
-//        await CreateUsersAsync(3);
+        #region Test pre-setup
 
-//        var expectedUserCount = GetUserModels()
-//            .Count(_ => _.Age > ageLimit && _.Age != null);
+        await CreateUsersAsync(3);
 
-//        #endregion
+        var usersNotFiltered = await GetUserModelsAsync();
 
-//        var response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
-//        var actualUsers = response.ToModel<List<UserModel>>();
+        #endregion
 
-//        Assert.Multiple(() =>
-//        {
-//            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
-//            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
-//        });
-//    }
+        var response = await HttpApiActions.GetUsersAsync((paramName, ageLimit.ToString()));
 
-//    [AllureName("Test Get Users - Filtered by 'youngerThan'")]
-//    [AllureEpic("Task 40")]
-//    [Test]
-//    public async Task GetUsersAsync_FilteredByYoungerThan_Valid()
-//    {
-//        const int ageLimit = 60;
-//        const string paramName = "youngerThan";
+        Assert.Multiple(async () =>
+        {
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
+            Assert.That(await response.ToModelAsync<List<UserModel>>(),
+                Has.Count.EqualTo(usersNotFiltered.Count(_ => _.Age > ageLimit && _.Age != null)));
+        });
+    }
 
-//        #region Test pre-setup
+    //Scenario #3
+    //Given I am authorizated user
+    //When I send GET request to /users endpoint
+    //And I add youngerThan parameter
+    //Then I get 200 respone code
+    //And I get all users younger than value of parameter
 
-//        CreateUsers(3);
+    [AllureName("Test Get Users - Filtered by 'youngerThan'")]
+    [AllureEpic("Task 40")]
+    [Test]
+    public async Task GetUsersAsync_FilteredByYoungerThan_Valid()
+    {
+        const int ageLimit = 60;
+        const string paramName = "youngerThan";
 
-//        var expectedUserCount = GetUserModels()
-//            .Count(_ => _.Age < ageLimit && _.Age != null);
+        #region Test pre-setup
 
-//        #endregion
+        await CreateUsersAsync(3);
 
-//        var response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
-//        var actualUsers = response.ToModel<List<UserModel>>();
+        var usersNotFiltered = await GetUserModelsAsync();
 
-//        Assert.Multiple(() =>
-//        {
-//            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
-//            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
-//        });
-//    }
+        #endregion
 
-//    [AllureName("Test Get Users - Filtered by 'sex'")]
-//    [AllureEpic("Task 40")]
-//    [Test]
-//    public async Task GetUsersAsync_FilteredBySex_Valid()
-//    {
-//        var filterValue = SexEnum.FEMALE.ToString();
-//        const string paramName = "sex";
+        var response = await HttpApiActions.GetUsersAsync((paramName, ageLimit.ToString()));
 
-//        #region Test pre-setup
+        Assert.Multiple(async () =>
+        {
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
+            Assert.That(await response.ToModelAsync<List<UserModel>>(),
+                Has.Count.EqualTo(usersNotFiltered.Count(_ => _.Age < ageLimit && _.Age != null)));
+        });
+    }
 
-//        CreateUsers(3);
+    //Scenario #4
+    //Given I am authorizated user
+    //When I send GET request to /users endpoint
+    //And I add sex parameter
+    //Then I get 200 respone code
+    //And I get all users with sex value of parameter
 
-//        var expectedUserCount = GetUserModels().Count(_ => _.Sex == filterValue);
+    [AllureName("Test Get Users - Filtered by 'sex'")]
+    [AllureEpic("Task 40")]
+    [Test]
+    public async Task GetUsersAsync_FilteredBySex_Valid()
+    {
+        var filterValue = SexEnum.FEMALE.ToString();
+        const string paramName = "sex";
 
-//        #endregion
+        #region Test pre-setup
 
-//        var response = ReadApiActions.GetUsers((paramName, filterValue));
-//        var actualUsers = response.ToModel<List<UserModel>>();
+        await CreateUsersAsync(3);
 
-//        Assert.Multiple(() =>
-//        {
-//            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
-//            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
-//        });
-//    }
-//}
+        var usersNotFiltered = await GetUserModelsAsync();
+
+        #endregion
+
+        var response = await HttpApiActions.GetUsersAsync((paramName, filterValue));
+
+        Assert.Multiple(async () =>
+        {
+            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
+            Assert.That(await response.ToModelAsync<List<UserModel>>(),
+                Has.Count.EqualTo(usersNotFiltered.Count(_ => _.Sex == filterValue)));
+        });
+    }
+}

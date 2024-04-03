@@ -85,14 +85,15 @@ public abstract class BaseApiTest
 
         await AddNewZipCodesAsync(zipCodes.ToArray());
 
-        zipCodes.ForEach(async zip =>
+        var tasks = new List<Task>();
+        zipCodes.ForEach(zip =>
         {
             var randomUser = UserModel.GenerateRandomUser(zip, Random.Next(1, 124));
-            await AddNewUserAsync(randomUser);
+            tasks.Add(AddNewUserAsync(randomUser));
             newUsers.Add(randomUser);
-
-            Thread.Sleep(1000);
         });
+
+        await Task.WhenAll(tasks);
 
         return newUsers;
     }
@@ -104,11 +105,13 @@ public abstract class BaseApiTest
         CheckResponseIsSuccessful(response);
     }
 
-    protected static async Task AddNewZipCodesAsync(params string[] zipCodes)
+    protected static async Task<string> AddNewZipCodesAsync(params string[] zipCodes)
     {
         var response = await HttpApiActions.CreateZipCodesAsync(zipCodes);
-
+  
         CheckResponseIsSuccessful(response);
+
+        return await response.Content.ReadAsStringAsync();
     }
 
     protected void AddNewUser(UserModel user)
@@ -165,6 +168,14 @@ public abstract class BaseApiTest
     protected List<UserModel> GetUserModels() =>
         ReadApiActions.GetUsers().ToModel<List<UserModel>>();
 
+    [AllureStep("Getting list of user models")]
+    protected static async Task<List<UserModel>> GetUserModelsAsync()
+    {
+        var response = await HttpApiActions.GetUsersAsync();
+
+        return await response.ToModelAsync<List<UserModel>>();
+    }
+
     [AllureStep("Getting list of zip code models")]
     protected List<string> GetZipCodesModel()
     {
@@ -173,6 +184,16 @@ public abstract class BaseApiTest
         CheckResponseIsSuccessful(response);
 
         return response.ToModel<List<string>>();
+    }
+
+    [AllureStep("Getting list of zip code models")]
+    protected static async Task<List<string>> GetZipCodesModelAsync()
+    {
+        var response = await HttpApiActions.GetZipCodesAsync();
+
+        CheckResponseIsSuccessful(response);
+
+        return await response.ToModelAsync<List<string>>();
     }
 
     [AllureStep("Checking Response Status is Successful")]

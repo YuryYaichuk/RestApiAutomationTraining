@@ -33,15 +33,14 @@ public class HttpClientTask30Tests : BaseApiTest
 
         var expectedUser = UserModel.GenerateRandomUser(randomZipCode, Random.Next(1, 124));
         var createUserResponse = await HttpApiActions.CreateUserAsync(expectedUser);
+
         PayloadCollector.AddPayload(expectedUser);
 
-        Assert.Multiple(() =>
+        Assert.Multiple(async () =>
         {
             Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.Created);
-            Asserts.AssertContains(
-                HttpApiActions.GetUsersAsync().Result.ToModel<List<UserModel>>(), expectedUser);
-            Asserts.AssertDoesNotContain(
-                HttpApiActions.GetZipCodesAsync().Result.ToModel<List<string>>(), expectedUser.ZipCode);
+            Asserts.AssertContains(await GetUserModelsAsync(), expectedUser);
+            Asserts.AssertDoesNotContain(await GetZipCodesModelAsync(), expectedUser.ZipCode);
         });
     }
 
@@ -63,11 +62,10 @@ public class HttpClientTask30Tests : BaseApiTest
 
         PayloadCollector.AddPayload(expectedUser);
 
-        Assert.Multiple(() =>
+        Assert.Multiple(async () =>
         {
             Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.Created);
-            Asserts.AssertContains(
-                HttpApiActions.GetUsersAsync().Result.ToModel<List<UserModel>>(), expectedUser);
+            Asserts.AssertContains(await GetUserModelsAsync(), expectedUser);
         });
     }
 
@@ -92,11 +90,10 @@ public class HttpClientTask30Tests : BaseApiTest
 
         PayloadCollector.AddPayload(expectedUser);
 
-        Assert.Multiple(() =>
+        Assert.Multiple(async () =>
         {
             Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.FailedDependency);
-            Asserts.AssertDoesNotContain(
-                HttpApiActions.GetUsersAsync().Result.ToModel<List<UserModel>>(), expectedUser);
+            Asserts.AssertDoesNotContain(await GetUserModelsAsync(), expectedUser);
         });
     }
 
@@ -125,11 +122,10 @@ public class HttpClientTask30Tests : BaseApiTest
 
         PayloadCollector.AddPayload(expectedUser);
 
-        Assert.Multiple(() =>
+        Assert.Multiple(async () =>
         {
             Asserts.AssertStatusCode(createUserResponse, HttpStatusCode.BadRequest);
-            Asserts.AssertCount(1,
-                HttpApiActions.GetUsersAsync().Result.ToModel<List<UserModel>>(), expectedUser);
+            Asserts.AssertCount(1, await GetUserModelsAsync(), expectedUser);
         });
 
         /*
