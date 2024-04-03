@@ -1,0 +1,1 @@
+{"name":"Ryzhyvedae","age":34,"sex":"MALE","zipCode":"478602"}
