@@ -1,0 +1,2 @@
+2024-04-03 19:59:22.7728|INFO|RestApiAutomationTraining.Logging.TestResults|StatusCode Created (201) for endpoint: POST http://localhost:49000/zip-codes/expand
+2024-04-03 19:59:22.8200|INFO|RestApiAutomationTraining.Logging.TestResults|StatusCode OK (200) for endpoint: GET http://localhost:49000/zip-codes
