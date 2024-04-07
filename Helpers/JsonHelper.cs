@@ -1,4 +1,6 @@
-﻿using RestSharp;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using RestSharp;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -22,7 +24,7 @@ public class JsonHelper
 
         try
         {
-            model = JsonSerializer.Deserialize<T>(valueToDeserialize, options);
+            model = System.Text.Json.JsonSerializer.Deserialize<T>(valueToDeserialize, options);
         }
         catch (Exception ex)
         {
@@ -31,5 +33,13 @@ public class JsonHelper
         }
 
         return model ?? throw new Exception("Model is null");
+    }
+
+    public static string SerializeCamelCase(object obj)
+    {
+        return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        });
     }
 }

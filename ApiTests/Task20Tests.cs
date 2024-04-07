@@ -1,3 +1,4 @@
+using NUnit.Allure.Attributes;
 using RestApiAutomationTraining.ApiActions;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
@@ -15,6 +16,9 @@ public class Task20Tests : BaseApiTest
     //And I get all available zip codes in the application for now
 
     [Test]
+    [AllureName("Test Get Available ZIP Codes")]
+    [AllureEpic("Task 20")]
+    [AllureIssue("Wrong status code is returned for Get /zip-codes")]
     public void GetZipCodes_AvailableZipCodesReturned_Valid()
     {
         #region Test pre-setup
@@ -60,6 +64,8 @@ public class Task20Tests : BaseApiTest
     //And Zip codes from request body are added to available zip codes of application
 
     [Test]
+    [AllureName("Test Add New ZIP Codes")]
+    [AllureEpic("Task 20")]
     public void ExpandZipCodes_NewZipCodesAdded_Valid()
     {
         var expectedZipCodeList = new List<string>
@@ -68,6 +74,7 @@ public class Task20Tests : BaseApiTest
             StringHelper.GetRandomNumericString(6)
         };
         var response = WriteApiActions.CreateZipCodes(expectedZipCodeList.ToArray());
+        PayloadCollector.AddPayload(expectedZipCodeList);
         var actualZipCodes = GetZipCodesModel();
 
         Assert.Multiple(() =>
@@ -87,6 +94,9 @@ public class Task20Tests : BaseApiTest
     //And There are no duplications in available zip codes
 
     [Test]
+    [AllureName("Test Add New ZIP Codes - No Duplicates Are Created for Not Used ZIP Codes")]
+    [AllureEpic("Task 20")]
+    [AllureIssue("The system creates duplicates for zip codes")]
     public void ExpandZipCodes_NoDuplicatesCreated_InputAlreadyExists_Valid()
     {
         #region Test pre-setup
@@ -97,6 +107,7 @@ public class Task20Tests : BaseApiTest
         #endregion
 
         var createZipCodesResponse = WriteApiActions.CreateZipCodes(duplicatedZipCode);
+        PayloadCollector.AddPayload(duplicatedZipCode);
 
         Assert.Multiple(() =>
         {
@@ -131,6 +142,9 @@ public class Task20Tests : BaseApiTest
     //And There are no duplications between available zip codes and already used zip codes
 
     [Test]
+    [AllureName("Test Add New ZIP Codes - No Duplicates Are Created for Used ZIP Codes")]
+    [AllureEpic("Task 20")]
+    [AllureIssue("The system creates zip codes that ulready used")]
     public void ExpandZipCodes_NoDuplicatesCreatedForUsedZipCodes_Valid()
     {
         #region Test pre-setup
@@ -144,6 +158,7 @@ public class Task20Tests : BaseApiTest
         #endregion
 
         var createZipCodeResponse = WriteApiActions.CreateZipCodes(usedZipCode);
+        PayloadCollector.AddPayload(usedZipCode);
 
         Assert.Multiple(() =>
         {

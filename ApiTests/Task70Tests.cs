@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NUnit.Allure.Attributes;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
 using System.Net;
@@ -17,6 +18,8 @@ public class Task70Tests : BaseApiTest
     //And Response contains number of uploaded users
 
     [Test]
+    [AllureName("Test Upload Users From JSON File")]
+    [AllureEpic("Task 70")]
     public void UploadUsers_Valid()
     {
         #region Test pre-setup
@@ -35,6 +38,7 @@ public class Task70Tests : BaseApiTest
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         });
         File.WriteAllText(fileName, usersJson);
+        PayloadCollector.AddPayload(usersJson);
 
         #endregion
 
@@ -59,6 +63,10 @@ public class Task70Tests : BaseApiTest
     //And Users are not uploaded
 
     [Test]
+    [AllureName("Test Upload Users From JSON File - One User with Unavailable ZIP Code")]
+    [AllureEpic("Task 70")]
+    [AllureIssue("Bug1: Status code 500 is returned instead of 424")]
+    [AllureIssue("Bug2: Valid users from list are uploaded anyway")]
     public void UploadUsers_IncorrectZipCode_Invalid()
     {
         #region Test pre-setup
@@ -77,6 +85,7 @@ public class Task70Tests : BaseApiTest
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         });
         File.WriteAllText(fileName, usersJson);
+        PayloadCollector.AddPayload(usersJson);
 
         #endregion
 
@@ -105,6 +114,10 @@ public class Task70Tests : BaseApiTest
     //And Users are not uploaded
 
     [Test]
+    [AllureName("Test Upload Users From JSON File - One User with Missing Sex Value")]
+    [AllureEpic("Task 70")]
+    [AllureIssue("Bug1: Status code 500 is returned instead of 409")]
+    [AllureIssue("Bug2: Valid users from list are uploaded anyway")]
     public void UploadUsers_MissingRequiredField_Invalid()
     {
         #region Test pre-setup
@@ -126,6 +139,7 @@ public class Task70Tests : BaseApiTest
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         });
         File.WriteAllText(fileName, usersJson);
+        PayloadCollector.AddPayload(usersJson);
 
         #endregion
 

@@ -1,4 +1,5 @@
-﻿using RestApiAutomationTraining.ApiActions;
+﻿using NUnit.Allure.Attributes;
+using RestApiAutomationTraining.ApiActions;
 using RestApiAutomationTraining.Enums;
 using RestApiAutomationTraining.Helpers;
 using RestApiAutomationTraining.Models;
@@ -9,6 +10,8 @@ namespace RestApiAutomationTraining.ApiTests;
 [TestFixture]
 public class Task40Tests : BaseApiTest
 {
+    [AllureName("Test Get Users - Unfiltered")]
+    [AllureEpic("Task 40")]
     [Test]
     public void GetUsers_Valid()
     {
@@ -31,6 +34,8 @@ public class Task40Tests : BaseApiTest
         });
     }
 
+    [AllureName("Test Get Users - Filtered by 'olderThan'")]
+    [AllureEpic("Task 40")]
     [Test]
     public void GetUsers_FilteredByOlderThan_Valid()
     {
@@ -56,6 +61,8 @@ public class Task40Tests : BaseApiTest
         });
     }
 
+    [AllureName("Test Get Users - Filtered by 'youngerThan'")]
+    [AllureEpic("Task 40")]
     [Test]
     public void GetUsers_FilteredByYoungerThan_Valid()
     {
@@ -81,6 +88,8 @@ public class Task40Tests : BaseApiTest
         });
     }
 
+    [AllureName("Test Get Users - Filtered by 'sex'")]
+    [AllureEpic("Task 40")]
     [Test]
     public void GetUsers_FilteredBySex_Valid()
     {
