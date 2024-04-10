@@ -72,6 +72,32 @@ public abstract class BaseApiTest
         return newUsers;
     }
 
+    [AllureStep("Creating {numberOfUsers} random users")]
+    protected static async Task<List<UserModel>> CreateUsersAsync(int numberOfUsers)
+    {
+        var newUsers = new List<UserModel>();
+        var zipCodes = new List<string>();
+
+        for (var i = 0; i < numberOfUsers; i++)
+        {
+            zipCodes.Add(StringHelper.GetRandomNumericString(6));
+        }
+
+        await AddNewZipCodesAsync(zipCodes.ToArray());
+
+        var tasks = new List<Task>();
+        zipCodes.ForEach(zip =>
+        {
+            var randomUser = UserModel.GenerateRandomUser(zip, Random.Next(1, 124));
+            tasks.Add(AddNewUserAsync(randomUser));
+            newUsers.Add(randomUser);
+        });
+
+        await Task.WhenAll(tasks);
+
+        return newUsers;
+    }
+
     protected void AddNewZipCodes(params string[] zipCodes)
     {
         var response = WriteApiActions.CreateZipCodes(zipCodes);
@@ -79,9 +105,25 @@ public abstract class BaseApiTest
         CheckResponseIsSuccessful(response);
     }
 
+    protected static async Task<string> AddNewZipCodesAsync(params string[] zipCodes)
+    {
+        var response = await HttpApiActions.CreateZipCodesAsync(zipCodes);
+  
+        CheckResponseIsSuccessful(response);
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
     protected void AddNewUser(UserModel user)
     {
         var response = WriteApiActions.CreateUser(user);
+
+        CheckResponseIsSuccessful(response);
+    }
+
+    protected static async Task AddNewUserAsync(UserModel user)
+    {
+        var response = await HttpApiActions.CreateUserAsync(user);
 
         CheckResponseIsSuccessful(response);
     }
@@ -126,6 +168,14 @@ public abstract class BaseApiTest
     protected List<UserModel> GetUserModels() =>
         ReadApiActions.GetUsers().ToModel<List<UserModel>>();
 
+    [AllureStep("Getting list of user models")]
+    protected static async Task<List<UserModel>> GetUserModelsAsync()
+    {
+        var response = await HttpApiActions.GetUsersAsync();
+
+        return await response.ToModelAsync<List<UserModel>>();
+    }
+
     [AllureStep("Getting list of zip code models")]
     protected List<string> GetZipCodesModel()
     {
@@ -134,6 +184,16 @@ public abstract class BaseApiTest
         CheckResponseIsSuccessful(response);
 
         return response.ToModel<List<string>>();
+    }
+
+    [AllureStep("Getting list of zip code models")]
+    protected static async Task<List<string>> GetZipCodesModelAsync()
+    {
+        var response = await HttpApiActions.GetZipCodesAsync();
+
+        CheckResponseIsSuccessful(response);
+
+        return await response.ToModelAsync<List<string>>();
     }
 
     [AllureStep("Checking Response Status is Successful")]
@@ -153,5 +213,23 @@ public abstract class BaseApiTest
 
         TestResults.Log.Info("StatusCode {StatusCode} ({Code}) for endpoint: {Method} {Uri}",
                 response.StatusCode, (int)response.StatusCode, response.Request.Method, response.ResponseUri);
+    }
+
+    [AllureStep("Checking Response Status is Successful")]
+    private static void CheckResponseIsSuccessful(HttpResponseMessage response)
+    {
+        if (TestResults.Log is null) throw new Exception(
+            "Logger was not initialized, make sure CustomLogger.SetLogger() is used in test pre-setup");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            TestResults.Log.Error("Unexpected StatusCode {StatusCode} ({Code}) for endpoint: {Method} {Uri}",
+                response.StatusCode, (int)response.StatusCode, response.RequestMessage.Method, response.RequestMessage.RequestUri);
+
+            Assert.Fail("For details check log file");
+        }
+
+        TestResults.Log.Info("StatusCode {StatusCode} ({Code}) for endpoint: {Method} {Uri}",
+                response.StatusCode, (int)response.StatusCode, response.RequestMessage.Method, response.RequestMessage.RequestUri);
     }
 }

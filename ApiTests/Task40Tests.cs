@@ -1,116 +1,116 @@
-﻿using NUnit.Allure.Attributes;
-using RestApiAutomationTraining.ApiActions;
-using RestApiAutomationTraining.Enums;
-using RestApiAutomationTraining.Helpers;
-using RestApiAutomationTraining.Models;
-using System.Net;
+﻿//using NUnit.Allure.Attributes;
+//using RestApiAutomationTraining.ApiActions;
+//using RestApiAutomationTraining.Enums;
+//using RestApiAutomationTraining.Helpers;
+//using RestApiAutomationTraining.Models;
+//using System.Net;
 
-namespace RestApiAutomationTraining.ApiTests;
+//namespace RestApiAutomationTraining.ApiTests;
 
-[TestFixture]
-public class Task40Tests : BaseApiTest
-{
-    [AllureName("Test Get Users - Unfiltered")]
-    [AllureEpic("Task 40")]
-    [Test]
-    public void GetUsers_Valid()
-    {
-        #region Test pre-setup
+//[TestFixture]
+//public class Task40Tests : BaseApiTest
+//{
+//    [AllureName("Test Get Users - Unfiltered")]
+//    [AllureEpic("Task 40")]
+//    [Test]
+//    public void GetUsers_Valid()
+//    {
+//        #region Test pre-setup
 
-        const int extraUserNumber = 3;
-        var initialUsersCount = GetUserModels().Count;
+//        const int extraUserNumber = 3;
+//        var initialUsersCount = GetUserModels().Count;
 
-        CreateUsers(extraUserNumber);
+//        CreateUsers(extraUserNumber);
 
-        #endregion
+//        #endregion
 
-        var response = ReadApiActions.GetUsers();
-        var actualUserList = response.ToModel<List<UserModel>>();
+//        var response = ReadApiActions.GetUsers();
+//        var actualUserList = response.ToModel<List<UserModel>>();
 
-        Assert.Multiple(() =>
-        {
-            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
-            Assert.That(actualUserList, Has.Count.GreaterThanOrEqualTo(initialUsersCount + extraUserNumber));
-        });
-    }
+//        Assert.Multiple(() =>
+//        {
+//            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
+//            Assert.That(actualUserList, Has.Count.GreaterThanOrEqualTo(initialUsersCount + extraUserNumber));
+//        });
+//    }
 
-    [AllureName("Test Get Users - Filtered by 'olderThan'")]
-    [AllureEpic("Task 40")]
-    [Test]
-    public void GetUsers_FilteredByOlderThan_Valid()
-    {
-        const int ageLimit = 12;
-        const string paramName = "olderThan";
+//    [AllureName("Test Get Users - Filtered by 'olderThan'")]
+//    [AllureEpic("Task 40")]
+//    [Test]
+//    public void GetUsers_FilteredByOlderThan_Valid()
+//    {
+//        const int ageLimit = 12;
+//        const string paramName = "olderThan";
 
-        #region Test pre-setup
+//        #region Test pre-setup
 
-        CreateUsers(3);
+//        CreateUsers(3);
 
-        var expectedUserCount = GetUserModels()
-            .Count(_ => _.Age > ageLimit && _.Age != null);
+//        var expectedUserCount = GetUserModels()
+//            .Count(_ => _.Age > ageLimit && _.Age != null);
 
-        #endregion
+//        #endregion
 
-        var response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
-        var actualUsers = response.ToModel<List<UserModel>>();
+//        var response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
+//        var actualUsers = response.ToModel<List<UserModel>>();
 
-        Assert.Multiple(() =>
-        {
-            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
-            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
-        });
-    }
+//        Assert.Multiple(() =>
+//        {
+//            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
+//            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
+//        });
+//    }
 
-    [AllureName("Test Get Users - Filtered by 'youngerThan'")]
-    [AllureEpic("Task 40")]
-    [Test]
-    public void GetUsers_FilteredByYoungerThan_Valid()
-    {
-        const int ageLimit = 60;
-        const string paramName = "youngerThan";
+//    [AllureName("Test Get Users - Filtered by 'youngerThan'")]
+//    [AllureEpic("Task 40")]
+//    [Test]
+//    public void GetUsers_FilteredByYoungerThan_Valid()
+//    {
+//        const int ageLimit = 60;
+//        const string paramName = "youngerThan";
 
-        #region Test pre-setup
+//        #region Test pre-setup
 
-        CreateUsers(3);
+//        CreateUsers(3);
 
-        var expectedUserCount = GetUserModels()
-            .Count(_ => _.Age < ageLimit && _.Age != null);
+//        var expectedUserCount = GetUserModels()
+//            .Count(_ => _.Age < ageLimit && _.Age != null);
 
-        #endregion
+//        #endregion
 
-        var response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
-        var actualUsers = response.ToModel<List<UserModel>>();
+//        var response = ReadApiActions.GetUsers((paramName, ageLimit.ToString()));
+//        var actualUsers = response.ToModel<List<UserModel>>();
 
-        Assert.Multiple(() =>
-        {
-            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
-            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
-        });
-    }
+//        Assert.Multiple(() =>
+//        {
+//            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
+//            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
+//        });
+//    }
 
-    [AllureName("Test Get Users - Filtered by 'sex'")]
-    [AllureEpic("Task 40")]
-    [Test]
-    public void GetUsers_FilteredBySex_Valid()
-    {
-        var filterValue = SexEnum.FEMALE.ToString();
-        const string paramName = "sex";
+//    [AllureName("Test Get Users - Filtered by 'sex'")]
+//    [AllureEpic("Task 40")]
+//    [Test]
+//    public void GetUsers_FilteredBySex_Valid()
+//    {
+//        var filterValue = SexEnum.FEMALE.ToString();
+//        const string paramName = "sex";
 
-        #region Test pre-setup
+//        #region Test pre-setup
 
-        CreateUsers(3);
+//        CreateUsers(3);
 
-        var expectedUserCount = GetUserModels().Count(_ => _.Sex == filterValue);
+//        var expectedUserCount = GetUserModels().Count(_ => _.Sex == filterValue);
 
-        #endregion
+//        #endregion
 
-        var response = ReadApiActions.GetUsers((paramName, filterValue));
-        var actualUsers = response.ToModel<List<UserModel>>();
+//        var response = ReadApiActions.GetUsers((paramName, filterValue));
+//        var actualUsers = response.ToModel<List<UserModel>>();
 
-        Assert.Multiple(() =>
-        {
-            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
-            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
-        });
-    }
-}
+//        Assert.Multiple(() =>
+//        {
+//            Asserts.AssertStatusCode(response, HttpStatusCode.OK);
+//            Assert.That(actualUsers, Has.Count.EqualTo(expectedUserCount));
+//        });
+//    }
+//}

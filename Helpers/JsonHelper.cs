@@ -35,6 +35,34 @@ public class JsonHelper
         return model ?? throw new Exception("Model is null");
     }
 
+    public static async Task<T> DeserializeObject<T>(HttpResponseMessage response)
+    {
+        var valueToDeserialize = response.Content ??
+            throw new Exception($"No content found for request:\n {response.RequestMessage.RequestUri}");
+
+        JsonSerializerOptions options = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
+
+        T? model;
+
+        try
+        {
+            model = System.Text.Json.JsonSerializer
+                .Deserialize<T>(await valueToDeserialize.ReadAsStringAsync(), options);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Deserialization failed for {typeof(T).Name}. " +
+                $"String to deserialize: {valueToDeserialize}\nOriginal error: {ex.Message}");
+        }
+
+        return model ?? throw new Exception("Model is null");
+    }
+
     public static string SerializeCamelCase(object obj)
     {
         return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
